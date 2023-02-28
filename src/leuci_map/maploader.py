@@ -267,6 +267,10 @@ class MapLoader(object):
             use_binary = self._diff_binary
         Blength = self.mobj.map_header["01_NC"] * self.mobj.map_header["02_NR"] * self.mobj.map_header["03_NS"]
         Bstart = len(self._ccp4_binary) - (4 * Blength)
+
+        self.mobj.F = self.mobj.map_header["01_NC"]
+        self.mobj.M = self.mobj.map_header["02_NR"]
+        self.mobj.S = self.mobj.map_header["03_NS"]
                     
         for i in range(0,Blength):
             strt = Bstart+(i*4)

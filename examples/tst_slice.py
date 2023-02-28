@@ -35,9 +35,11 @@ def single_slice():
         po.download()
     po.load()
     if po.em_loaded:        
+        print("Loading values", pdb_code)
         po.load_values()
         if po.values_loaded:
             mf = mfun.MapFunctions(pdb_code,po.mobj)
+            print("Creating slice", pdb_code)
             vals = mf.get_slice(central,linear,planar,width,samples)
             print(vals)
 
