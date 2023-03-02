@@ -26,6 +26,7 @@ planar = v3.VectorThree(3,2,3)
 pdb_code = "6eex"
 width=5
 samples=10
+interp_method="nearest"
 
 ########## EXAMPLE #################
 def single_slice():
@@ -38,10 +39,14 @@ def single_slice():
         print("Loading values", pdb_code)
         po.load_values()
         if po.values_loaded:
-            mf = mfun.MapFunctions(pdb_code,po.mobj)
+            mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
             print("Creating slice", pdb_code)
-            vals = mf.get_slice(central,linear,planar,width,samples)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=0)
             print(vals)
+            rads = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=1)
+            print(rads)
+            laps = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=2)
+            print(laps)
 
             
             

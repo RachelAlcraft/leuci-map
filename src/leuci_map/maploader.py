@@ -17,11 +17,13 @@ from Bio import BiopythonWarning
 warnings.simplefilter('ignore', BiopythonWarning)
 
 from . import mapobject as mobj
+from . import pdbobject as pobj
 
 class MapLoader(object):
     def __init__(self, pdb_code, directory="", cif=False):
         # PUBLIC INTERFACE
         self.mobj = mobj.MapObject(pdb_code)
+        self.pobj = pobj.PdbObject(pdb_code)
         
         # Private data
         self._ccp4_binary = None
@@ -103,10 +105,21 @@ class MapLoader(object):
         if self._cif:
             structure = MMCIFParser().get_structure(self.mobj.pdb_code, self._filepath)
         else:
-            structure = PDBParser(PERMISSIVE=True).get_structure(self.mobj.pdb_code, self._filepath)
+            structure = PDBParser(PERMISSIVE=True).get_structure(self.mobj.pdb_code, self._filepath)                
+            with open(self._filepath,"r") as fr:
+                lines = fr.readlines()
+                for line in lines:
+                    self.pobj.add_line_string(line)
+                
+
         self._struc_dict = MMCIF2Dict(self._filepath)
         self.mobj.resolution = structure.header["resolution"]
-        self.mobj.exp_method = structure.header["structure_method"]            
+        self.mobj.exp_method = structure.header["structure_method"]
+
+
+        # with the structure create a pdbobject
+
+
         return True
 
     def load_map(self):
