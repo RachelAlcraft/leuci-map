@@ -131,7 +131,10 @@ dmypy.json
 
 # Don't sync data
 examples/data/*.*
+examples/OfficialExamples/*.jpg
 
 # Don't sync private info
 instructions/rel_to_pypi.txt
 
+
+1ejg_diff.ccp4

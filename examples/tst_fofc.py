@@ -24,11 +24,14 @@ import leuci_map.mapfunctions as mfun
 central = v3.VectorThree(1,2,3)
 linear = v3.VectorThree(2,2,2)
 planar = v3.VectorThree(3,2,3)
-pdb_code = "1ejg"
+pdb_code = "6eex"
+fo = 2
+fc = -1
 width=6
 samples=100
-interp_method="cubic"
+interp_method="linear"
 new_mat = True
+deriv=0
 
 ########## EXAMPLE #################
 def single_slice():    
@@ -43,15 +46,20 @@ def single_slice():
         if po.values_loaded:
             dt1 = datetime.datetime.now()
             mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
-            print("Creating slice density", pdb_code)
-            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=0)
-            #print(vals)
-            print("Creating slice radient", pdb_code)
-            rads = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=1)
+            fo,fc = 2,-1
+            print("Creating slice", pdb_code, deriv, fo, fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc)            
+            fo,fc = 1,-1
+            print("Creating slice", pdb_code, deriv, fo, fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc)
             #print(rads)
-            print("Creating slice laplacian", pdb_code)
-            laps = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=2)
-            #print(laps)
+            fo,fc = 1,0
+            print("Creating slice", pdb_code, deriv, fo, fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc)
+            fo,fc = 0,1
+            print("Creating slice", pdb_code, deriv, fo, fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc)
+            
             dt2 = datetime.datetime.now()
             print("Time taken=",dt2-dt1)
 

@@ -133,9 +133,11 @@ class MapLoader(object):
         except:        
             self.em_loaded = False
     
-    def load_values(self, diff=False):
+    def load_values(self, diff=True):
         try:                        
-            self._create_mapvalues(diff)
+            self._create_mapvalues(False)
+            if diff:
+                self._create_mapvalues(True)
             self.values_loaded = True
         except:        
             self.values_loaded = False

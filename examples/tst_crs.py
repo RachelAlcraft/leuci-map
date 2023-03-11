@@ -16,12 +16,13 @@ from pathlib import Path
 import leuci_xyz.vectorthree as v3
 import leuci_xyz.spacetransform as sptr
 
-from leuci_map import pdbobject as pobj
 from leuci_map import maploader as moad
+import leuci_map.mapfunctions as mfun
+import leuci_xyz.vectorthree as v3
 
 ########## INPUTS #################
 pdb_code = "3u7z"
-
+interp_method = "linear"
 ########## EXAMPLE #################
 def query_pdb():
     print("Showing pdb details", pdb_code)
@@ -30,39 +31,30 @@ def query_pdb():
         po.download()
     po.load()
     my_pdb = po.pobj
-    a1,a2,a3 = my_pdb.get_first_three()
-    print(a1,a2,a3)
+    al,ac,ap = my_pdb.get_first_three()
+    print(ac,al,ap)
+    keyc = my_pdb.get_key(ac)
+    keyl = my_pdb.get_key(al)
+    keyp = my_pdb.get_key(ap)
+        
+    coordsc = my_pdb.get_coords_key(keyc)
+    coordsl = my_pdb.get_coords_key(keyl)
+    coordsp = my_pdb.get_coords_key(keyp)
+    print(keyc,coordsc)
+    print(keyl,coordsl)
+    print(keyp,coordsp)
+    cvc = v3.VectorThree().from_coords(coordsc)
+    cvl = v3.VectorThree().from_coords(coordsl)
+    cvp = v3.VectorThree().from_coords(coordsp)
 
-    key1 = my_pdb.get_key(a1)
-    key2 = my_pdb.get_next_key(key1,0)
-    print("GONE BACK",key2)
-    coords1 = my_pdb.get_coords_key(key1)
-    coords2 = my_pdb.get_coords_key(key2)
-    print(key1, key2)
-    print(coords1, coords2)
+    mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
 
-    key1 = my_pdb.get_key(a2)
-    key2 = my_pdb.get_next_key(key1,0)
-    coords1 = my_pdb.get_coords_key(key1)
-    coords2 = my_pdb.get_coords_key(key2)
-    print(key1, key2)
-    print(coords1, coords2)
+    print("Start xyz",cvc.get_key())
+    c1_crs = mf.get_crs(cvc)
+    print("Crs",c1_crs.get_key())
+    c1_xyz = mf.get_xyz(c1_crs)
+    print("return xyz",c1_xyz.get_key())
 
-    key1 = my_pdb.get_key(a3)
-    key2 = my_pdb.get_next_key(key1)
-    coords1 = my_pdb.get_coords_key(key1)
-    coords2 = my_pdb.get_coords_key(key2)
-    print(key1, key2)
-    print(coords1, coords2)
-
-    key_next = key1
-    for i in range(20):
-        key_next = my_pdb.get_next_key(key_next)
-        print(i,key_next)
-
-    key = "A:707@C.A"
-    atc = my_pdb.get_atm_key(key)
-    print(atc)
     
 
             
