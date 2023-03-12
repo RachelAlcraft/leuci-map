@@ -15,7 +15,7 @@ class MapFunctions(object):
         self.pdb_code = pdb_code        
         self.mobj = mobj
         self.pobj = pobj        
-        self.interp = pol.create_interpolator(interp_method,self.mobj.values,self.mobj.F,self.mobj.M,self.mobj.S)
+        self.interper = pol.create_interpolator(interp_method,self.mobj.values,self.mobj.F,self.mobj.M,self.mobj.S,log_level=1)
         self.interp_method = interp_method
         self.fo=2
         self.fc=-1
@@ -32,15 +32,15 @@ class MapFunctions(object):
     def get_slice(self,central, linear, planar, width, samples, interp_method, deriv=0, fo=2,fc=-1,log_level=0):
         # change interpolator if necessary
         if self.interp_method != interp_method or (self.fo != fo or self.fc != fc and self.mobj.diff_values != []):
-            interper_vals = self.mobj.values
+            interper_vals = []
             if self.mobj.diff_values != []:
                 vs, ds = 0,0
                 vs, ds = fo, -1 * fo                
                 vs = vs + fc
                 ds = ds + (-2 * fc)
                 for i in range(len(self.mobj.values)):
-                    interper_vals[i] = vs*self.mobj.values[i] + ds*self.mobj.diff_values[i]
-            self.interp = pol.create_interpolator(interp_method,interper_vals,self.mobj.F,self.mobj.M,self.mobj.S)
+                    interper_vals.append(vs*self.mobj.values[i] + ds*self.mobj.diff_values[i])
+            self.interper = pol.create_interpolator(interp_method,interper_vals,self.mobj.F,self.mobj.M,self.mobj.S)
             self.interp_method = interp_method
             self.fo = fo
             self.fc = fc
@@ -53,7 +53,7 @@ class MapFunctions(object):
         u_coords = gm.get_unit_grid(width,samples)        
         xyz_coords = spc.convert_coords(u_coords)        
         crs_coords = self.crs_spc.convert_coords_to_crs(xyz_coords)        
-        vals = self.interp.get_val_slice(crs_coords,deriv=deriv)
+        vals = self.interper.get_val_slice(crs_coords,deriv=deriv)
         return vals
     
     def get_xyz(self,crs_coords):

@@ -30,6 +30,7 @@ def query_pdb():
     if not po.exists():
         po.download()
     po.load()
+    po.load_values()
     my_pdb = po.pobj
     al,ac,ap = my_pdb.get_first_three()
     print(ac,al,ap)

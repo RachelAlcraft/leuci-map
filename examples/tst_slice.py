@@ -24,7 +24,7 @@ import leuci_map.mapfunctions as mfun
 central = v3.VectorThree(1,2,3)
 linear = v3.VectorThree(2,2,2)
 planar = v3.VectorThree(3,2,3)
-pdb_code = "1ejg"
+pdb_code = "6eex"
 width=6
 samples=100
 interp_method="cubic"
@@ -44,13 +44,13 @@ def single_slice():
             dt1 = datetime.datetime.now()
             mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
             print("Creating slice density", pdb_code)
-            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=0)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0)
             #print(vals)
             print("Creating slice radient", pdb_code)
-            rads = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=1)
+            rads = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1)
             #print(rads)
             print("Creating slice laplacian", pdb_code)
-            laps = mf.get_slice(central,linear,planar,width,samples,interp_method,diff=2)
+            laps = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2)
             #print(laps)
             dt2 = datetime.datetime.now()
             print("Time taken=",dt2-dt1)
