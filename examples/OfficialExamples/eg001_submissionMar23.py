@@ -6,10 +6,10 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [0,1,2,3,4,5] # could be 0-14
-interp_method = "linear"
+which_examples = [2] # could be 0-5
+interp_method = "bspline"
 width = 8           # in angstrom
-samples = 200       # number of sample points along each axis to interpolate
+samples = 80       # number of sample points along each axis to interpolate
 ########### A description of the examples #############
 examples = []
 append = "-" + interp_method
@@ -22,8 +22,9 @@ examples.append(["Fig01-rings"+append,"1yk4",
 #1ab, bond electrons
 examples.append(["Fig02-bond-electrons"+append,"1yk4",
                   ["(4.021,16.6,0.386)","(3.335,15.784,1.472)","(3.493,16.727,-0.736)"],
-                  [("density",2,-1,0.8,0.8,(1,1),"RGB"),("density",1,-1,0.4,0.4,(1,2),"RB")],
-                  (1,2),
+                  [("density",2,-1,0.8,0.8,(1,1),"RGB"),("density",1,-1,0.4,0.4,(1,2),"RB"),
+                  ("density",1,0,0.8,0.8,(2,1),"RGB"),("density",1,0,0.8,0.8,(2,2),"RGB")],
+                  (2,2),
                   ("2FoFc","FoFc","Fo","Fc")])       #1
 #2abcd, negative density in NOS switch
 examples.append(["Fig03-NOS"+append,"3u7z",
@@ -203,9 +204,9 @@ for which_example in which_examples:
   fig.update_yaxes(scaleanchor="x",scaleratio=1)    
   fig.update_xaxes(scaleanchor="y",scaleratio=1)
   rows, cols =plot_config[0],plot_config[1]
-  width = 2000
-  height = width * rows/cols
-  fig.write_image(EG_DIR +"eg001_eg_" + plotid + ".jpg",width=width,height=height)
+  wdth = 2000
+  hight = int(wdth * rows/cols)
+  fig.write_image(EG_DIR +"eg001_eg_" + plotid + ".jpg",width=wdth,height=hight)
   print("#### Created image at", EG_DIR +"eg001_eg_" + plotid + ".jpg ####")
   dt2 = datetime.datetime.now()
   print("completed in", dt2-dt1)
