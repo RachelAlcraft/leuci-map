@@ -24,7 +24,8 @@ import leuci_map.mapfunctions as mfun
 central = v3.VectorThree(1,2,3)
 linear = v3.VectorThree(2,2,2)
 planar = v3.VectorThree(3,2,3)
-pdb_code = "6eex"
+#pdb_code = "6eex" #small xray
+pdb_code = "6axz" #em
 fo = 2
 fc = -1
 width=6
@@ -51,11 +52,11 @@ def single_slice():
             vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc)            
             fo,fc = 1,-1
             print("Creating slice", pdb_code, deriv, fo, fc)
-            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc,log_level=1)
             #print(rads)
             fo,fc = 1,0
             print("Creating slice", pdb_code, deriv, fo, fc)
-            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc,log_level=1)
             fo,fc = 0,1
             print("Creating slice", pdb_code, deriv, fo, fc)
             vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc)

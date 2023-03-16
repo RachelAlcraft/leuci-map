@@ -30,7 +30,8 @@ class MapLoader(object):
         self._diff_binary = None        
         self.pdb_loaded = False        
         self.em_loaded = False       
-        self.values_loaded = False            
+        self.values_loaded = False
+        self.has_both = True
         # PRIVATE INTERFACE
         self._directory = directory        
         self._cif=cif
@@ -89,14 +90,15 @@ class MapLoader(object):
             self.load_pdb()            
         if 'x-ray' in self.mobj.exp_method:
             self._fetch_maplink_xray()            
-        #elif 'electron' in self.exp_method:
-        #    self._fetch_maplink_em()
+        elif 'electron' in self.mobj.exp_method:            
+            print("Now downloading em matrix")
+            self._fetch_maplink_em()
         self.em_loaded = True
     
     def load(self):
         self.pdb_loaded = self.load_pdb()
-        if 'x-ray' in self.mobj.exp_method:            
-            self.load_map()
+        #if 'x-ray' in self.mobj.exp_method:            
+        self.em_loaded = self.load_map()
             
             
         
@@ -106,39 +108,47 @@ class MapLoader(object):
             structure = MMCIFParser().get_structure(self.mobj.pdb_code, self._filepath)
         else:
             structure = PDBParser(PERMISSIVE=True).get_structure(self.mobj.pdb_code, self._filepath)                
+            found_em = False
             with open(self._filepath,"r") as fr:
                 lines = fr.readlines()
                 for line in lines:
                     self.pobj.add_line_string(line)
+                    #REMARK 900 RELATED ID: EMD-6240   RELATED DB: EMDB                              
+                    if "REMARK 900 RELATED ID:" in line and "EMD-" in line and not found_em:
+                        found_em=True
+                        info = line.split(" ")
+                        self.mobj.em_code = info[4]
+                        self.has_both = False
+                        self.mobj.em_link = f"https://www.ebi.ac.uk/emdb/{self.mobj.em_code}"
                 
-
         self._struc_dict = MMCIF2Dict(self._filepath)
         self.mobj.resolution = structure.header["resolution"]
         self.mobj.exp_method = structure.header["structure_method"]
 
-
         # with the structure create a pdbobject
-
-
         return True
 
     def load_map(self):
         try:
             with open(self._filepath_ccp4, mode='rb') as file:
-                self._ccp4_binary = file.read()        
-            with open(self._filepath_diff, mode='rb') as file:
-                self._diff_binary = file.read()
+                self._ccp4_binary = file.read()
+            if self.has_both:
+                with open(self._filepath_diff, mode='rb') as file:
+                    self._diff_binary = file.read()
             self._create_mapheader()            
-            self.em_loaded = True
-        except:        
-            self.em_loaded = False
+            return True
+        except Exception as e:
+            print("Error loading map", str(e))
+            return False
     
     def load_values(self, diff=True):
         try:                        
             self._create_mapvalues(False)
-            if diff:
+            if diff and self.has_both:
                 self._create_mapvalues(True)
             self.values_loaded = True
+            if not self.has_both:
+                self.mobj.diff_values = []
         except:        
             self.values_loaded = False
 
@@ -169,14 +179,30 @@ class MapLoader(object):
         pdb file
         REMARK 900 RELATED ID: EMD-6240   RELATED DB: EMDB                              
         """
-        self.mobj.em_code = ""
-        with open(self._filepath,"r") as fr:
-            lines = fr.read_lines()
-            print(lines)
-        
+        self.mobj.em_code = self.em_code.split("-")[1]
         self.mobj.diff_link = "" # there is no difference density for cryo-em   
-        self.mobj.ccp4_link = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + self.em_code + "/map/emd_" + self.em_code + ".map.gz"        
+        self.mobj.ccp4_link = "https://ftp.ebi.ac.uk/pub/databases/emdb/structures/EMD-" + self.mobj.em_code + "/map/emd_" + self.mobj.em_code + ".map.gz"        
         self.mobj.em_link = f"https://www.ebi.ac.uk/emdb/EMD-{self.em_code}"
+        self.has_both = False
+        # Download the files        
+        filepath_gz = self._filepath_ccp4 + ".gz"
+        if not exists(self._filepath_ccp4):
+            # need to unzip file
+            print("getting",self._filepath_ccp4)
+            if not exists(filepath_gz):
+                # need to download zipped file
+                print("getting",filepath_gz)
+                try:
+                    urllib.request.urlretrieve(self.mobj.ccp4_link, filepath_gz)
+                except Exception as e:
+                    print(str(e))
+            # Unzipping
+            import gzip
+            import shutil
+            with gzip.open(filepath_gz, 'rb') as f_in:
+                with open(self._filepath_ccp4, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+                
         
 
     def _create_mapheader(self):

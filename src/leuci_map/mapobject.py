@@ -14,7 +14,7 @@ class MapObject(object):
     def __init__(self, pdb_code):
         # PUBLIC INTERFACE        
         self.pdb_code = pdb_code       
-        self.em_code = ""        
+        self.em_code = pdb_code
         self.em_link = ""
         self.resolution = ""
         self.exp_method = ""
@@ -28,7 +28,8 @@ class MapObject(object):
            
         #self.values = {} #possible alternative if there are many 0s but it is much slower for high res xray data eg 4rek
         #self.diff_values = {}
-        self.ebi_link = f"https://www.ebi.ac.uk/pdbe/entry/pdb/{pdb_code}"                
+        self.ebi_link = f"https://www.ebi.ac.uk/pdbe/entry/pdb/{pdb_code}"
+        self.em_link = f"https://www.ebi.ac.uk/pdbe/entry/pdb/{pdb_code}" #if an electron microscopy may be a different link later
         self.ccp4_link = f"https://www.ebi.ac.uk/pdbe/entry-files/{self.pdb_code}.ccp4"
         self.diff_link = f"https://www.ebi.ac.uk/pdbe/entry-files/{self.pdb_code}_diff.ccp4"
         self.pdb_link = ""

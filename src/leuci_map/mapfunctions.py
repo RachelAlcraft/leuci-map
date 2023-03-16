@@ -14,8 +14,11 @@ class MapFunctions(object):
         # PUBLIC INTERFACE
         self.pdb_code = pdb_code        
         self.mobj = mobj
-        self.pobj = pobj        
-        self.interper = pol.create_interpolator(interp_method,self.mobj.values,self.mobj.F,self.mobj.M,self.mobj.S,log_level=1)
+        self.pobj = pobj
+        self.main_interper_vals = [] #default top using only the main density, which for xray is 2Fo-1Fc
+        for i in range(len(self.mobj.values)):
+            self.main_interper_vals.append(self.mobj.values[i])
+        self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=1)
         self.interp_method = interp_method
         self.fo=2
         self.fc=-1
@@ -31,19 +34,23 @@ class MapFunctions(object):
         
     def get_slice(self,central, linear, planar, width, samples, interp_method, deriv=0, fo=2,fc=-1,log_level=0):
         # change interpolator if necessary
-        if self.interp_method != interp_method or (self.fo != fo or self.fc != fc and self.mobj.diff_values != []):
-            interper_vals = []
-            if self.mobj.diff_values != []:
+        if self.interp_method != interp_method and self.mobj.diff_values == []:#then the method has changed but it is em with no diffs
+            self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=log_level)
+        elif self.interp_method != interp_method or (self.fo != fo or self.fc != fc and self.mobj.diff_values != []):            
+            if self.mobj.diff_values != []: #we can't change the fo and fc if thee is no diff
+                interper_vals = []
                 vs, ds = 0,0
                 vs, ds = fo, -1 * fo                
                 vs = vs + fc
                 ds = ds + (-2 * fc)
+                if log_level > 0:
+                    print("New interper, Fos=",fo,"Fcs=",fc,"mains=",vs,"diffs=",ds)
                 for i in range(len(self.mobj.values)):
                     interper_vals.append(vs*self.mobj.values[i] + ds*self.mobj.diff_values[i])
-            self.interper = pol.create_interpolator(interp_method,interper_vals,self.mobj.F,self.mobj.M,self.mobj.S)
-            self.interp_method = interp_method
-            self.fo = fo
-            self.fc = fc
+                self.interper = pol.create_interpolator(interp_method,interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=log_level)
+                self.interp_method = interp_method
+                self.fo = fo
+                self.fc = fc
         
         #############        
         # objects needed

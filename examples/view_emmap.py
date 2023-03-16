@@ -1,17 +1,14 @@
 """
-RSA 4/2/23
+RSA 15/3/23
 
 This loads and examines a map file and it's corresponding cif file given the pdb code
 It will automatically check what kind of electron ddensity is available - xray or cryo em
 """
 
 ########## INPUTS #################
-#pdb_code = "6kj3"
-#pdb_code = "3j9e" #em
-pdb_code = "1ejg"
-#pdb_code = "6eex"
-#pdb_code = "3nir"
-#pdb_code = "4rek"
+#pdb_code = "6axz"
+pdb_code = "3j9e"
+#pdb_code = "7a6a"
 
 
 ########## INPUTS #################
@@ -36,6 +33,7 @@ def show_pdb_map(pdb_code):
         print(po.mobj.em_code)
         print(po.mobj.pdb_link)
         print(po.mobj.ebi_link)
+        print(po.mobj.em_link)
         #print(po.map_code)
         print(po.mobj.resolution)
         print(po.mobj.exp_method)
@@ -50,12 +48,16 @@ def show_pdb_map(pdb_code):
             print("Values...")
             print(len(po.mobj.values),"=",po.mobj.map_header["01_NC"] * po.mobj.map_header["02_NR"] * po.mobj.map_header["03_NS"])
             print(po.mobj.values[0])    
-            print(po.mobj.values[len(po.mobj.values)-1])             
-            
-            print("Diff Values...")
-            print(len(po.mobj.diff_values),"=",po.mobj.map_header["01_NC"] * po.mobj.map_header["02_NR"] * po.mobj.map_header["03_NS"])
-            print(po.mobj.diff_values[0])    
-            print(po.mobj.diff_values[len(po.mobj.diff_values)-1])
+            print(po.mobj.values[len(po.mobj.values)-1])            
+            print("FMS=",po.mobj.F,po.mobj.M,po.mobj.S)
+            print("Diff Values...")            
+            if len(po.mobj.diff_values) > 0:
+                print(len(po.mobj.diff_values),"=",po.mobj.map_header["01_NC"] * po.mobj.map_header["02_NR"] * po.mobj.map_header["03_NS"])            
+                print(po.mobj.diff_values[0])
+                print(po.mobj.diff_values[len(po.mobj.diff_values)-1])            
+            else:
+                print("            ...none")
+            print(po.mobj.em_link)
     #print(po._struc_dict["_pdbx_database_related.details"])
     print("~")
     
