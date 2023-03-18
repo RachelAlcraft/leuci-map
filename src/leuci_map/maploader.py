@@ -31,6 +31,7 @@ class MapLoader(object):
         self.pdb_loaded = False        
         self.em_loaded = False       
         self.values_loaded = False
+        self.values_loading = False
         self.has_both = True
         # PRIVATE INTERFACE
         self._directory = directory        
@@ -53,7 +54,7 @@ class MapLoader(object):
         return False
     
     def exists_pdb(self):
-        if exists(self._filepath):
+        if exists(self._filepath) and exists(self._filepath+".done.txt"):
             return True
         else:
             return False
@@ -61,13 +62,13 @@ class MapLoader(object):
     def exists_map(self):
         self.load_pdb()
         if 'x-ray' in self.mobj.exp_method:
-            if exists(self._filepath_ccp4) and exists(self._filepath_diff):                
+            if exists(self._filepath_ccp4) and exists(self._filepath_diff) and exists(self._filepath_ccp4+".done.txt"):
                 self.em_loaded = True
                 return True        
             else:
                 return False
         elif 'electron' in self.mobj.exp_method.lower():
-            if exists(self._filepath_ccp4):
+            if exists(self._filepath_ccp4) and exists(self._filepath_ccp4+".done.txt"):
                 self.em_loaded = True
                 return True
             else:
@@ -76,12 +77,37 @@ class MapLoader(object):
             self.em_loaded = True
             return True # it doesn;t NOT exists anyway
     
-    def download(self):
+    def download(self):                
         if not self.exists_pdb():
-            self.download_pdb()
+            if not self.already_started_pdb():
+                self.write_starting_pdb()
+                self.download_pdb()
         if not self.exists_map():
-            self.download_map()
+            if not self.already_started_map():
+                self.write_starting_map()
+                self.download_map()
+        self.write_done()
     
+    def already_started_pdb(self):
+        return exists(self._filepath+".start.txt")    
+    def already_started_map(self):
+        return exists(self._filepath_ccp4+".start.txt")
+    def write_starting_pdb(self):
+        with open(self._filepath + ".start.txt","w") as fs_pdb:
+            fs_pdb.write("start")            
+    def write_starting_map(self):        
+        with open(self._filepath_ccp4 + ".start.txt","w") as fs_map:
+            fs_map.write("start")
+    def write_done(self):
+        if exists(self._filepath+".start.txt"):
+            os.remove(self._filepath+".start.txt")
+        if exists(self._filepath_ccp4+".start.txt"):
+            os.remove(self._filepath_ccp4+".start.txt")
+        with open(self._filepath + ".done.txt","w") as fw_pdb:
+            fw_pdb.write("done")
+        with open(self._filepath_ccp4 + ".done.txt","w") as fw_map:
+            fw_map.write("done")
+                
     def download_pdb(self):
         self._fetch_pdbdata()
 
@@ -118,8 +144,9 @@ class MapLoader(object):
                         found_em=True
                         info = line.split(" ")
                         self.mobj.em_code = info[4]
+                        self.em_code = self.mobj.em_code
                         self.has_both = False
-                        self.mobj.em_link = f"https://www.ebi.ac.uk/emdb/{self.mobj.em_code}"
+                        self.mobj.em_link = f"https://www.ebi.ac.uk/emdb/{self.em_code}"
                 
         self._struc_dict = MMCIF2Dict(self._filepath)
         self.mobj.resolution = structure.header["resolution"]
@@ -141,16 +168,30 @@ class MapLoader(object):
             print("Error loading map", str(e))
             return False
     
+    def wait_for_load(self,log_level=0):
+        import time
+        count = 0
+        while self.values_loading:
+            time.sleep(0.1)
+            if (log_level > -0):
+                count += 1
+                if count%30 == 0:
+                    print("Waiting for load values", len(self.mobj.values), len(self.mobj.diff_values))
+        return self.values_loaded
+
     def load_values(self, diff=True):
-        try:                        
+        try:            
+            self.values_loading = True
             self._create_mapvalues(False)
             if diff and self.has_both:
-                self._create_mapvalues(True)
-            self.values_loaded = True
+                self._create_mapvalues(True)            
             if not self.has_both:
                 self.mobj.diff_values = []
+            self.values_loading = False
+            self.values_loaded = True
         except:        
             self.values_loaded = False
+            self.values_loading = False
 
 
     #################################################
@@ -170,6 +211,7 @@ class MapLoader(object):
         if not exists(self._filepath_diff):            
             urllib.request.urlretrieve(self.mobj.diff_link, self._filepath_diff)
         self.mobj.em_code = self.mobj.pdb_code
+        self.em_code = self.mobj.pdb_code
 
                         
     def _fetch_maplink_em(self):     

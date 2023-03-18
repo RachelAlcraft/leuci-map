@@ -42,7 +42,7 @@ def single_slice():
         po.load_values()
         if po.values_loaded:
             dt1 = datetime.datetime.now()
-            mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
+            mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method,degree=5)
             print("Creating slice density", pdb_code)
             vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0)
             print(vals)

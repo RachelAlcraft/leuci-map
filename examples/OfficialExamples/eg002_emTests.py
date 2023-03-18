@@ -6,23 +6,24 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [1] # could be 0-6
+which_examples = [0,1] # could be 0-6
 width = 8           # in angstrom
-samples = 200       # number of sample points along each axis to interpolate
+samples = 100       # number of sample points along each axis to interpolate
+degree=3
 ########### A description of the examples #############
 examples = []
-append = ""
+append = "_"+str(degree)
 #6abcd non xray
 examples.append(["Fig01-em_6axz"+append,"6axz",
                   ["(-0.919,-1.242,7.415)","(-1.53,-2.311,6.507)","(0.261,-0.895,7.258)"],
-                  [("density",2,-1,0.8,0.5,(1,1),"RGB","linear"),("radient",2,-1,0.8,0.8,(1,2),"BW","linear"),("laplacian",1,0,0.8,0.5,(1,3),"RB","linear"),
+                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",1,0,0.8,0.5,(1,3),"RB","cubic"),
                   ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",1,0,0.8,0.5,(2,3),"RB","bspline")],
                   (2,3),
                   ("density","radient","laplacian","density","radient","laplacian")])       #0
 
 examples.append(["Fig02-em_3j9e"+append,"3j9e",
                   ["(-32.311,71.42,299.49)","(-33.189,70.797,300.586)","(-32.376,71.028,298.327)"],
-                  [("density",2,-1,0.8,0.5,(1,1),"RGB","linear"),("radient",2,-1,0.8,0.8,(1,2),"BW","linear"),("laplacian",1,0,0.8,0.5,(1,3),"RB","linear"),
+                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",1,0,0.8,0.5,(1,3),"RB","cubic"),
                   ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",1,0,0.8,0.5,(2,3),"RB","bspline")],
                   (2,3),
                   ("density","radient","laplacian","density","radient","laplacian")])       #1
@@ -78,7 +79,7 @@ for which_example in which_examples:
       ml.load_values()
     if not ml.values_loaded:
       print("!!!! There is a problem loading",pdb_code)    
-    mf = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj,"linear")      
+    mf = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj,"linear",degree=degree)
     loadeds[pdb_code] = mf
   ###############################################################################
   # Create the 3 coordinates for orientation  
@@ -122,11 +123,11 @@ for which_example in which_examples:
     print("Plot details=",deriv,fo,fc,min_per,max_per)    
     vals = [[]]
     if deriv == "density":    
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc,degree=degree)
     elif deriv == "radient":
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc,degree=degree)
     elif deriv == "laplacian":
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc,degree=degree)
     ###############################################################################    
     # Showing the plots in plotly
     # reference: https://plotly.com/python/contour-plots/

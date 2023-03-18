@@ -7,8 +7,8 @@ It will automatically check what kind of electron ddensity is available - xray o
 
 ########## INPUTS #################
 #pdb_code = "6axz"
-pdb_code = "3j9e"
-#pdb_code = "7a6a"
+#pdb_code = "3j9e"
+pdb_code = "7a6a"
 
 
 ########## INPUTS #################
@@ -43,7 +43,8 @@ def show_pdb_map(pdb_code):
         print(po.em_loaded)
         print(po.mobj.map_header)
         print(po.mobj.header_as_string)
-        po.load_values(diff=True)
+        if not po.wait_for_load(log_level=1):
+            po.load_values(diff=True)
         if po.values_loaded:
             print("Values...")
             print(len(po.mobj.values),"=",po.mobj.map_header["01_NC"] * po.mobj.map_header["02_NR"] * po.mobj.map_header["03_NS"])

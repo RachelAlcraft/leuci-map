@@ -7,6 +7,7 @@ https://pynative.com/make-python-class-json-serializable/#:~:text=Use%20toJSON()
 import os
 from os.path import exists
 import json
+from leuci_xyz import vectorthree as v3
 
 class PdbObject(object):
     def __init__(self, pdb_code):
@@ -104,6 +105,13 @@ class PdbObject(object):
             atm["element"] = ele        
             self.lines.append(atm)
 
+    def get_atom_coords(self):
+        atoms = []
+        for atm in self.lines:
+            coord = v3.VectorThree(atm["x"],atm["y"],atm["z"])
+            atoms.append(coord)
+        return atoms
+                
     def toJson(self):
         return json.dumps(self, default=lambda o: o.__dict__)
     

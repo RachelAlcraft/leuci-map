@@ -7,3 +7,4 @@ https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
 
 ## Cif files
 https://mmcif.wwpdb.org/docs/faqs/pdbx-mmcif-faq-general.html
+
