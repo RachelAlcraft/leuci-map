@@ -8,7 +8,8 @@ It will automatically check what kind of electron ddensity is available - xray o
 ########## INPUTS #################
 #pdb_code = "6axz"
 #pdb_code = "3j9e"
-pdb_code = "7a6a"
+#pdb_code = "7a6a"
+pdb_code = "7uly"
 
 
 ########## INPUTS #################

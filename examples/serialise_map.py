@@ -37,15 +37,16 @@ def serialise_pdb_map(pdb_code):
     dt1 = datetime.datetime.now()
     print("\nLoading data\t\t\t", str(dt1))
     po.load()    
-    po.load_values()    
+    po.load_values()        
     dt2 = datetime.datetime.now()
     print("...2FoFc\t\t\t", str(dt2))
     print("\t=",str(dt2-dt1))
-    po.load_values(diff=True)
+    po.load_values(diff=True)    
     dt2b = datetime.datetime.now()
     print("...FoFc\t\t\t\t", str(dt2b))
     print("\t=",str(dt2b-dt2))
     mob = po.mobj
+    print("ONE",mob.npy_values[0,0,0])
     dt3 = datetime.datetime.now()
     print("\nEncode into JSON formatted Data\t", str(dt3))
     mob_json = json.dumps(mob.toJson())        
@@ -64,6 +65,7 @@ def serialise_pdb_map(pdb_code):
     print("\t=",str(dt6-dt5))
     #print(mob_json)
     #print(mobob)
+    print("TWO",mobob.npy_values[0,0,0])
     
     print("~")
      

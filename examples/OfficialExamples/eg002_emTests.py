@@ -6,7 +6,7 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [0,1] # could be 0-6
+which_examples = [0,1,3] # could be 0-6
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
 degree=3
@@ -16,17 +16,30 @@ append = "_"+str(degree)
 #6abcd non xray
 examples.append(["Fig01-em_6axz"+append,"6axz",
                   ["(-0.919,-1.242,7.415)","(-1.53,-2.311,6.507)","(0.261,-0.895,7.258)"],
-                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",1,0,0.8,0.5,(1,3),"RB","cubic"),
-                  ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",1,0,0.8,0.5,(2,3),"RB","bspline")],
+                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",2,-1,0.8,0.5,(1,3),"RB","cubic"),
+                  ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",2,-1,0.8,0.5,(2,3),"RB","bspline")],
                   (2,3),
                   ("density","radient","laplacian","density","radient","laplacian")])       #0
 
 examples.append(["Fig02-em_3j9e"+append,"3j9e",
                   ["(-32.311,71.42,299.49)","(-33.189,70.797,300.586)","(-32.376,71.028,298.327)"],
-                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",1,0,0.8,0.5,(1,3),"RB","cubic"),
-                  ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",1,0,0.8,0.5,(2,3),"RB","bspline")],
+                  [("density",2,-1,0.8,0.5,(1,1),"RGB","cubic"),("radient",2,-1,0.8,0.8,(1,2),"BW","cubic"),("laplacian",2,-1,0.8,0.5,(1,3),"RB","cubic"),
+                  ("density",2,-1,0.8,0.5,(2,1),"RGB","bspline"),("radient",2,-1,0.8,0.8,(2,2),"BW","bspline"),("laplacian",2,-1,0.8,0.5,(2,3),"RB","bspline")],
                   (2,3),
                   ("density","radient","laplacian","density","radient","laplacian")])       #1
+
+
+examples.append(["Fig03-6eex"+append,"6eex",
+                  ["(3.02,9.641,18.371)","(3.648,9.139,19.655)","(1.904,10.156,18.377)"],
+                  [("laplacian",2,-1,0.8,0.5,(1,1),"RB","cubic")],
+                  (1,1),
+                  ("laplacian alone")])       #2
+
+examples.append(["Fig04-7uly"+append,"7uly",
+                  ["(-6.172,-15.897,3.134)","(-6.447,-15.681,1.689)","(-5.583,-16.994,3.507)"],
+                  [("density",2,-1,1.0,0.8,(1,1),"RGB","bspline"),("radient",2,-1,1.0,1.0,(1,2),"BW","bspline"),("laplacian",2,-1,0.9,0.9,(1,3),"BR","bspline"),],
+                  (1,3),
+                  ("density","radient","laplacian")])       #3
 
 
 

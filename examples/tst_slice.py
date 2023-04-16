@@ -25,9 +25,10 @@ central = v3.VectorThree(1,2,3)
 linear = v3.VectorThree(2,2,2)
 planar = v3.VectorThree(3,2,3)
 #pdb_code = "6eex" #small xray
-pdb_code = "6axz" #em
+#pdb_code = "6axz" #em
+pdb_code = "7uly" #em
 width=6
-samples=100
+samples=10
 interp_method="cubic"
 
 ########## EXAMPLE #################

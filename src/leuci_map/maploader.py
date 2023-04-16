@@ -10,7 +10,9 @@ import urllib.request
 from Bio.PDB.MMCIFParser import MMCIFParser        
 from Bio.PDB.MMCIF2Dict import MMCIF2Dict
 from Bio.PDB.PDBParser import PDBParser
+
 import struct
+import numpy as np
 
 import warnings
 from Bio import BiopythonWarning
@@ -348,13 +350,34 @@ class MapLoader(object):
         #vals = {} #zeros alternative
         if diff:
             use_binary = self._diff_binary
+        
         Blength = self.mobj.map_header["01_NC"] * self.mobj.map_header["02_NR"] * self.mobj.map_header["03_NS"]
         Bstart = len(self._ccp4_binary) - (4 * Blength)
 
         self.mobj.F = self.mobj.map_header["01_NC"]
         self.mobj.M = self.mobj.map_header["02_NR"]
         self.mobj.S = self.mobj.map_header["03_NS"]
+
+        if diff:
+            self.mobj.diff_values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
+        else:
+            self.mobj.values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
+
+        count = 0
+        for s in range(0,self.mobj.S): #slow
+            for m in range(0,self.mobj.M):#medium
+                for f in range(0,self.mobj.F):#fast
+                    strt = Bstart+(count*4)
+                    val = struct.unpack('f', use_binary[strt:strt+4])[0]
+                    count += 1
+                    if diff:
+                        self.mobj.diff_values[f,m,s] = val
+                    else:
+                        self.mobj.values[f,m,s] = val
                     
+        """
+        Blength = self.mobj.map_header["01_NC"] * self.mobj.map_header["02_NR"] * self.mobj.map_header["03_NS"]
+        Bstart = len(self._ccp4_binary) - (4 * Blength)
         for i in range(0,Blength):
             strt = Bstart+(i*4)
             val = struct.unpack('f', use_binary[strt:strt+4])[0]
@@ -365,6 +388,7 @@ class MapLoader(object):
             self.mobj.diff_values = vals
         else:
             self.mobj.values = vals
+        """
 
 
 

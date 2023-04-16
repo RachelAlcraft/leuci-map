@@ -8,6 +8,8 @@ from leuci_xyz import crstransform as crs
 from leuci_xyz import gridmaker as grid
 from leuci_pol import interpolator as pol
 from operator import itemgetter
+import datetime
+import math
 
 #####################################################################
 class MapFunctions(object):
@@ -60,18 +62,25 @@ class MapFunctions(object):
         if change_degree:
             self.degree = degree
     
+    def get_slices(self,central, linear, planar, width, samples, interp_method, derivs=[0], fo=2,fc=-1,log_level=0,degree=-1):
+        vals = []
+        for deriv in derivs:
+            val = self.get_slice(central, linear, planar, width, samples, interp_method, deriv, fo,fc,log_level,degree)
+            vals.append(val)
+        return vals
+
     def get_slice(self,central, linear, planar, width, samples, interp_method, deriv=0, fo=2,fc=-1,log_level=0,degree=-1):
-        # change interpolator if necessary
-        self.make_interper_if_needed(interp_method,log_level,fo,fc,degree)                
+        # change interpolator if necessary        
+        self.make_interper_if_needed(interp_method,log_level,fo,fc,degree)        
         #############        
         # objects needed
-        spc = space.SpaceTransform(central, linear, planar)
+        spc = space.SpaceTransform(central, linear, planar)        
         gm = grid.GridMaker()        
         #########                                        
-        u_coords = gm.get_unit_grid(width,samples)        
-        xyz_coords = spc.convert_coords(u_coords)        
-        crs_coords = self.crs_spc.convert_coords_to_crs(xyz_coords)        
-        vals = self.interper.get_val_slice(crs_coords,deriv=deriv)
+        u_coords = gm.get_unit_grid(width,samples)                
+        xyz_coords = spc.convert_coords(u_coords)                
+        crs_coords = self.crs_spc.convert_coords_to_crs(xyz_coords)                
+        vals = self.interper.get_val_slice(crs_coords,deriv=deriv)        
         return vals
     
     def get_xyz(self,crs_coords):
@@ -82,11 +91,15 @@ class MapFunctions(object):
         crs_coords = self.crs_spc.xyz_to_crs(xyz_coords)        
         return crs_coords
 
-    def get_map_projection(self, sliced):
-        vals = self.interper.get_projection(sliced.lower())        
+    def get_map_projection(self, sliced, xmin=-1,xmax=-1,ymin=-1,ymax=-1):
+        vals = self.interper.get_projection(sliced.lower(), xmin,xmax,ymin,ymax)        
         return vals
-    
+        
     def get_atoms_projection(self, interp_method,degree=-1,log_level=0):
+        
+        minx,miny,minz = 1000,1000,1000
+        maxx,maxy,maxz = -1000,-1000,-1000
+
         atoms = self.pobj.get_atom_coords()
         self.make_interper_if_needed(interp_method,log_level,2,-1,degree)
         crss = []        
@@ -101,8 +114,16 @@ class MapFunctions(object):
             xs.append(co.A)
             ys.append(co.B)
             zs.append(co.C)
-            vs.append(va)                        
-        return xs,ys,zs,vs
+            vs.append(va)
+
+            minx = math.floor(min(minx,float(co.A)))
+            maxx = math.ceil(max(maxx,float(co.A)))
+            miny = math.floor(min(miny,float(co.B)))
+            maxy = math.ceil(max(maxy,float(co.B)))
+            minz = math.floor(min(minz,float(co.C)))
+            maxz = math.ceil(max(maxz,float(co.C)))                        
+        
+        return xs,ys,zs,vs,(minx,maxx),(miny,maxy),(minz,maxz)
     
     def get_map_cross_section(self, sliced,layer):
         vals = self.interper.get_cross_section(sliced.lower(),layer)        

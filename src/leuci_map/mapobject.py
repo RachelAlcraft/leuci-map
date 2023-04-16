@@ -20,8 +20,10 @@ class MapObject(object):
         self.exp_method = ""
         self.map_header = {}
         self.header_as_string = ""        
-        self.values = [] 
-        self.diff_values = []     
+        self.values = []
+        #self.npy_values = []
+        self.diff_values = [] 
+        #self.npy_diff_values = []
         self.F = -1 #fastest axis
         self.M = -1 #middle axis        
         self.S = -1 #slowest axis
@@ -34,6 +36,9 @@ class MapObject(object):
         self.diff_link = f"https://www.ebi.ac.uk/pdbe/entry-files/{self.pdb_code}_diff.ccp4"
         self.pdb_link = ""
 
+    """
+    # NOT USING THIS ANYMORE TOO MUCH IN THE WEB PAGE!!!!!
+    # And it doesn;t work for numpy need to fix that
     def toJson(self):
         return json.dumps(self, default=lambda o: o.__dict__)
     
@@ -46,7 +51,9 @@ class MapObject(object):
         self.map_header = jsndic["map_header"]
         self.header_as_string = jsndic["header_as_string"]
         self.values = jsndic["values"]
+        self.npy_values = jsndic["npy_values"]
         self.diff_values = jsndic["diff_values"]
+        self.npy_diff_values = jsndic["npy_diff_values"]
         #self.values = {} #possible alternative if there are many 0s but it is much slower for high res xray data eg 4rek
         #self.diff_values = {}
         self.ebi_link = jsndic["ebi_link"]
@@ -56,6 +63,7 @@ class MapObject(object):
         self.F = self.map_header["01_NC"] #fastest axis
         self.M = self.map_header["02_NR"] #middle axis        
         self.S = self.map_header["03_NS"] #slowest axis
+    """
         
                                 
     

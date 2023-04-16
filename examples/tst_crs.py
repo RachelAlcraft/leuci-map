@@ -5,7 +5,7 @@ This loads and examines a map file and it's corresponding cif file given the pdb
 It will automatically check what kind of electron ddensity is available - xray or cryo em
 """
 
-## Ensure code is importaed in path
+## Ensure code is imported in path
 from pathlib import Path
 CODEDIR = str(Path(__file__).resolve().parent.parent )+ "/src/"
 import sys

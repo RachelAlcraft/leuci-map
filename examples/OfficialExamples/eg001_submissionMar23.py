@@ -6,8 +6,8 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [0] # could be 0-6
-interp_method = "cubic"
+which_examples = [6] # could be 0-6
+interp_method = "bspline"
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
 ########### A description of the examples #############
@@ -55,6 +55,13 @@ examples.append(["Fig06-hb"+append,"1r6j",
                   ("density",1,0,0.8,0.5,(2,1),"RGB"),("density",0,1,0.8,0.5,(2,2),"RGB")],
                   (2,2),
                   ("2FoFc","FoFc","Fo","Fc")])       #5
+
+#7uly trial
+examples.append(["Fig07-7uly"+append,"7uly",
+                  ["(-6.172,-15.897,3.134)","(-6.447,-15.681,1.689)","(-5.583,-16.994,3.507)"],
+                  [("density",2,-1,1.0,0.8,(1,1),"RGB"),("radient",2,-1,1.0,1.0,(1,2),"BW"),("laplacian",1,0,0.9,0.9,(1,3),"BR"),],
+                  (1,3),
+                  ("density","radient","laplacian")])       #6
 
 ########### Imports ################################
 from pathlib import Path

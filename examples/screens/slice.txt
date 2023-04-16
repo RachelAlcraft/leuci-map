@@ -1,0 +1,8 @@
+Timings before improvements in sotore and code (6eex, bspline, all 3)
+each time
+0:00:04.974169
+0:00:04.586944
+0:00:04.674809
+0:00:04.267303
+0:00:04.363710
+Time taken to start check on file 0:00:22.867125
