@@ -6,7 +6,7 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [0,1,3] # could be 0-6
+which_examples = [0] # could be 0-6
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
 degree=3

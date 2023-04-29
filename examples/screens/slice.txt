@@ -6,3 +6,33 @@ each time
 0:00:04.267303
 0:00:04.363710
 Time taken to start check on file 0:00:22.867125
+
+Not quicker but better code for loading from memory
+each time
+0:00:04.791233
+0:00:04.783269
+0:00:04.519212
+0:00:05.019007
+0:00:04.689185
+Time taken to start check on file 0:00:23.801977
+
+Added threads...
+each time
+0:00:05.045798
+0:00:05.295999
+0:00:05.070812
+0:00:05.111622
+0:00:05.526800
+Time taken to start check on file 0:00:26.051116
+
+Showing 7a6a the biggest cryo-em:cubic large but stable with no overhead (5 mins for bspline)
+each time
+linear 0:01:35.602951
+linear 0:00:15.185561
+bspline 0:05:51.962726
+bspline 0:00:17.459951
+cubic 0:00:28.145928
+cubic 0:00:26.662939
+nearest 0:00:13.807985
+nearest 0:00:14.342542
+

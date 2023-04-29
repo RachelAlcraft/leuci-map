@@ -122,6 +122,8 @@ class MapPlotter(object):
         hight = int(wdth * rows/cols)
         if self.filename == "SHOW":
             fig.show()
+        elif ".html" in self.filename:
+            fig.write_html(self.filename)
         else:
             fig.write_image(self.filename,width=wdth,height=hight)
         

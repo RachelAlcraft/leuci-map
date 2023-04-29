@@ -46,9 +46,10 @@ def single_proj():
             dt2 = datetime.datetime.now()
             print("Time taken=",dt2-dt1)
             # Now find the extremes of the atoms and the matching slice
-            xx,yy,zz = mf.get_atoms_extremes()
+            #xx,yy,zz = mf.get_atoms_extremes()
+            xs,ys,zs,vs,xx,yy,zz = mf.get_atoms_projection("linear",log_level=1)
             valsxy_a = mf.get_map_projection("xy",xx[0],xx[1],yy[0],yy[1])
-            valsyz_a = mf.get_map_projection("yx",yy[0],yy[1],zz[0],zz[1])
+            valsyz_a = mf.get_map_projection("yz",yy[0],yy[1],zz[0],zz[1])
             valszx_a = mf.get_map_projection("zx",zz[0],zz[1],xx[0],xx[1])
             print(valsxy_a)
             print(valsyz_a)

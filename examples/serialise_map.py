@@ -46,7 +46,7 @@ def serialise_pdb_map(pdb_code):
     print("...FoFc\t\t\t\t", str(dt2b))
     print("\t=",str(dt2b-dt2))
     mob = po.mobj
-    print("ONE",mob.npy_values[0,0,0])
+    print("ONE",mob.values[0])
     dt3 = datetime.datetime.now()
     print("\nEncode into JSON formatted Data\t", str(dt3))
     mob_json = json.dumps(mob.toJson())        

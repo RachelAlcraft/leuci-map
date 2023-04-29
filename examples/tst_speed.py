@@ -30,7 +30,6 @@ width=8
 samples=101
 interp_methods = ["nearest","linear","cubic","bspline"]
 derivs = [0,1,2]
-degree = 3
 #interp_methods = ["linear","bspline"]
 ########## EXAMPLE #################
 for pdb_code in pdb_codes:
@@ -55,8 +54,8 @@ for pdb_code in pdb_codes:
     for interp_method in interp_methods:
         t0 = datetime.datetime.now()                       
         print("=============",interp_method,pdb_code,"=================")
-        mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method,degree=degree)
-        print("Interper=",interp_method,degree,datetime.datetime.now()-t1)
+        mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
+        print("Interper=",interp_method,datetime.datetime.now()-t1)
 
         for deriv in derivs:    
             t1 = datetime.datetime.now()                        

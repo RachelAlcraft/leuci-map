@@ -13,7 +13,7 @@ import math
 
 #####################################################################
 class MapFunctions(object):
-    def __init__(self, pdb_code, mobj,pobj, interp_method,degree=-1):
+    def __init__(self, pdb_code, mobj,pobj, interp_method):
         # PUBLIC INTERFACE
         self.pdb_code = pdb_code        
         self.mobj = mobj
@@ -24,9 +24,8 @@ class MapFunctions(object):
         else:
             for i in range(len(self.mobj.values)):
                 self.main_interper_vals.append(self.mobj.values[i])
-            self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=1,degree=degree)
-        self.interp_method = interp_method
-        self.degree = degree
+            self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=1)
+        self.interp_method = interp_method        
         self.fo=2
         self.fc=-1
         self.crs_spc = None
@@ -40,11 +39,10 @@ class MapFunctions(object):
         self.crs_spc = crs.CrsTransform(dim_order, crs_starts, axis_sampling, map2crs, cell_dims, angles)        
         
     
-    def make_interper_if_needed(self,interp_method,log_level,fo,fc,degree):
-        change_degree = (degree != -1) and (degree != self.degree)
-        if (self.interp_method != interp_method or change_degree) and self.mobj.diff_values == []:#then the method has changed but it is em with no diffs
-            self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,degree=degree,log_level=log_level)
-        elif (self.interp_method != interp_method or change_degree) or (self.fo != fo or self.fc != fc and self.mobj.diff_values != []):            
+    def make_interper_if_needed(self,interp_method,log_level,fo,fc):        
+        if (self.interp_method != interp_method) and self.mobj.diff_values == []:#then the method has changed but it is em with no diffs
+            self.interper = pol.create_interpolator(interp_method,self.main_interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=log_level)
+        elif (self.interp_method != interp_method) or (self.fo != fo or self.fc != fc and self.mobj.diff_values != []):            
             if self.mobj.diff_values != []: #we can't change the fo and fc if thee is no diff
                 interper_vals = []
                 vs, ds = 0,0
@@ -59,9 +57,7 @@ class MapFunctions(object):
         self.interp_method = interp_method
         self.fo = fo
         self.fc = fc
-        if change_degree:
-            self.degree = degree
-    
+            
     def get_slices(self,central, linear, planar, width, samples, interp_method, derivs=[0], fo=2,fc=-1,log_level=0,degree=-1):
         vals = []
         for deriv in derivs:
@@ -69,9 +65,9 @@ class MapFunctions(object):
             vals.append(val)
         return vals
 
-    def get_slice(self,central, linear, planar, width, samples, interp_method, deriv=0, fo=2,fc=-1,log_level=0,degree=-1):
+    def get_slice(self,central, linear, planar, width, samples, interp_method, deriv=0, fo=2,fc=-1,log_level=0):
         # change interpolator if necessary        
-        self.make_interper_if_needed(interp_method,log_level,fo,fc,degree)        
+        self.make_interper_if_needed(interp_method,log_level,fo,fc)        
         #############        
         # objects needed
         spc = space.SpaceTransform(central, linear, planar)        
@@ -95,13 +91,13 @@ class MapFunctions(object):
         vals = self.interper.get_projection(sliced.lower(), xmin,xmax,ymin,ymax)        
         return vals
         
-    def get_atoms_projection(self, interp_method,degree=-1,log_level=0):
+    def get_atoms_projection(self, interp_method,log_level=0):
         
         minx,miny,minz = 1000,1000,1000
         maxx,maxy,maxz = -1000,-1000,-1000
 
         atoms = self.pobj.get_atom_coords()
-        self.make_interper_if_needed(interp_method,log_level,2,-1,degree)
+        self.make_interper_if_needed(interp_method,log_level,2,-1)
         crss = []        
         for atm in atoms:
             crs_coord = self.get_crs(atm)
@@ -116,12 +112,12 @@ class MapFunctions(object):
             zs.append(co.C)
             vs.append(va)
 
-            minx = math.floor(min(minx,float(co.A)))
-            maxx = math.ceil(max(maxx,float(co.A)))
-            miny = math.floor(min(miny,float(co.B)))
-            maxy = math.ceil(max(maxy,float(co.B)))
-            minz = math.floor(min(minz,float(co.C)))
-            maxz = math.ceil(max(maxz,float(co.C)))                        
+            minx = math.floor(min(minx,float(co.A)))-1
+            maxx = math.ceil(max(maxx,float(co.A)))+1
+            miny = math.floor(min(miny,float(co.B)))-1
+            maxy = math.ceil(max(maxy,float(co.B)))+1
+            minz = math.floor(min(minz,float(co.C)))-1
+            maxz = math.ceil(max(maxz,float(co.C)))+1                     
         
         return xs,ys,zs,vs,(minx,maxx),(miny,maxy),(minz,maxz)
     

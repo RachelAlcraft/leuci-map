@@ -6,7 +6,7 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [6] # could be 0-6
+which_examples = [0,1,2,3,4,5,6] # could be 0-6
 interp_method = "bspline"
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
@@ -122,7 +122,7 @@ for which_example in which_examples:
   planar = v3.VectorThree().from_coords(cp)
   ################################################################################
   # Now create the MapPlotter
-  filename = EG_DIR +"eg001_eg_" + plotid + ".jpg"
+  filename = EG_DIR +"eg001_eg_" + plotid + ".html"
   mplot = mpl.MapPlotter(mf, filename,interp_method,samples,width,central,linear,planar,plot_config)
   ## Add each plot to the map    
   for deriv,fo,fc,min_per,max_per, plot_pos,hue in plots:

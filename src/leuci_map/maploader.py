@@ -20,6 +20,7 @@ warnings.simplefilter('ignore', BiopythonWarning)
 
 from . import mapobject as mobj
 from . import pdbobject as pobj
+from . import mapfunctions as mfun
 
 class MapLoader(object):
     def __init__(self, pdb_code, directory="", cif=False):
@@ -35,6 +36,7 @@ class MapLoader(object):
         self.values_loaded = False
         self.values_loading = False
         self.has_both = True
+        self.mfunc = None
         # PRIVATE INTERFACE
         self._directory = directory        
         self._cif=cif
@@ -65,18 +67,18 @@ class MapLoader(object):
         self.load_pdb()
         if 'x-ray' in self.mobj.exp_method:
             if exists(self._filepath_ccp4) and exists(self._filepath_diff) and exists(self._filepath_ccp4+".done.txt"):
-                self.em_loaded = True
+                #self.em_loaded = True
                 return True        
             else:
                 return False
         elif 'electron' in self.mobj.exp_method.lower():
             if exists(self._filepath_ccp4) and exists(self._filepath_ccp4+".done.txt"):
-                self.em_loaded = True
+                #self.em_loaded = True
                 return True
             else:
                 return False
         else:
-            self.em_loaded = True
+            #self.em_loaded = True
             return True # it doesn;t NOT exists anyway
     
     def download(self):                
@@ -121,7 +123,7 @@ class MapLoader(object):
         elif 'electron' in self.mobj.exp_method:            
             print("Now downloading em matrix")
             self._fetch_maplink_em()
-        self.em_loaded = True
+        #self.em_loaded = True
     
     def load(self):
         self.pdb_loaded = self.load_pdb()
@@ -191,11 +193,16 @@ class MapLoader(object):
                 self.mobj.diff_values = []
             self.values_loading = False
             self.values_loaded = True
-        except:        
+        except Exception as e:
+            print(str(e))
             self.values_loaded = False
             self.values_loading = False
 
 
+    def get_or_make_func(self, interp):
+        if self.mfunc == None:
+            self.mfunc = mfun.MapFunctions(self.mobj.pdb_code,self.mobj,self.pobj, interp) #the default method is linear
+        return self.mfunc
     #################################################
     ############ PRIVATE INTERFACE ##################
     #################################################
@@ -235,7 +242,7 @@ class MapLoader(object):
             print("getting",self._filepath_ccp4)
             if not exists(filepath_gz):
                 # need to download zipped file
-                print("getting",filepath_gz)
+                print("getting",self.mobj.ccp4_link,"to",filepath_gz)
                 try:
                     urllib.request.urlretrieve(self.mobj.ccp4_link, filepath_gz)
                 except Exception as e:
