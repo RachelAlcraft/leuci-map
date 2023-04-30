@@ -5,7 +5,7 @@ This shows projections
 
 """
 ################### USER INPUTS #######################
-which_examples = [2] # could be 0-6
+which_examples = [0,1,2,3,4] # could be 0-6
 interp_method="linear"
 ########### A description of the examples #############
 examples = []
@@ -20,6 +20,18 @@ examples.append(["Fig01-proj-6eex"+append,"6eex",
                     ],
                   (4,3),
                   ("xy","yz","zx","xy","yz","zx","","","","","","")])       #0
+
+
+examples.append(["Fig01-proj-6q53"+append,"6q53",                  
+                  [
+                    ("xy","xy",(1,1)),("yz","yz",(1,2)),("zx","zx",(1,3)),
+                    ("xya","xy",(2,1)),("yza","yz",(2,2)),("zxa","zx",(2,3)),
+                    ("xy","",(3,1)),("yz","",(3,2)),("zx","",(3,3)),
+                    ("","xy",(4,1)),("","yz",(4,2)),("","zx",(4,3)),
+                    ],
+                  (4,3),
+                  ("xy","yz","zx","xy","yz","zx","","","","","","")])       #0
+
 
 examples.append(["Fig02-proj-1ejg"+append,"1ejg",                  
                   [
