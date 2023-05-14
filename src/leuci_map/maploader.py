@@ -159,7 +159,7 @@ class MapLoader(object):
         # with the structure create a pdbobject
         return True
 
-    def load_map(self):
+    def load_map(self):        
         try:
             with open(self._filepath_ccp4, mode='rb') as file:
                 self._ccp4_binary = file.read()
@@ -381,7 +381,7 @@ class MapLoader(object):
                         self.mobj.diff_values[f,m,s] = val
                     else:
                         self.mobj.values[f,m,s] = val
-                    
+                            
         """
         Blength = self.mobj.map_header["01_NC"] * self.mobj.map_header["02_NR"] * self.mobj.map_header["03_NS"]
         Bstart = len(self._ccp4_binary) - (4 * Blength)

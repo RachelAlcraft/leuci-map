@@ -6,8 +6,8 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [0,1,2,3,4,5,6] # could be 0-6
-interp_method = "bspline"
+which_examples = [5] # could be 0-6
+interp_method = "linear"
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
 ########### A description of the examples #############

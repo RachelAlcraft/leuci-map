@@ -36,7 +36,7 @@ class PdbObject(object):
 
     def get_coords_key(self,key):
         atm = self.get_atm_key(key)
-        if atm == {}:
+        if atm == {} or atm == None:
             return "(0,0,0)"
         return f"({atm['x']},{atm['y']},{atm['z']})"
 
@@ -47,20 +47,28 @@ class PdbObject(object):
 
     def get_atm_key(self,key):
         #A:709@C.A
-        sx = key.split("@")
-        s01 = sx[0].split(":")
-        s23 = sx[1].split(".")
-        ch,rid,am,ver = s01[0],s01[1],s23[0],s23[1]
-        for atm in self.lines:        
-            if atm["chain"] == ch and atm["rid"] == rid and atm["atm"] == am and atm["version"] == ver:        
-                return atm
-        return {}
+        try:
+            sx = key.split("@")
+            s01 = sx[0].split(":")
+            s23 = sx[1].split(".")
+            ch,rid,am,ver = s01[0],s01[1],s23[0],s23[1]
+            for atm in self.lines:        
+                if atm["chain"] == ch and atm["rid"] == rid and atm["atm"] == am and atm["version"] == ver:        
+                    return atm
+        except:
+            return {}
     
     def get_key(self,atm):
         if atm == {}:
             return ""
         #A:709@C.A
         return f"{atm['chain']}:{atm['rid']}@{atm['atm']}.{atm['version']}"
+    
+    def get_description(self,atm,dis):
+        if atm == {}:
+            return ""
+        #A:709@C.A
+        return f"{round(dis,3)}:{atm['aa']}:{atm['chain']}:{atm['rid']}@{atm['atm']}.{atm['version']}"
     
     def get_next_key(self,key, offset=1):
         try:
@@ -112,6 +120,33 @@ class PdbObject(object):
             atoms.append(coord)
         return atoms
                 
+    def get_inscope_atoms(self,anchor,distance,log_level=0):
+        in_scope = []
+        for atm in self.lines:
+            crd = v3.VectorThree(float(atm["x"]),float(atm["y"]),float(atm["z"]))
+            dis = anchor.distance(crd)
+            if dis <= distance:
+                in_scope.append(atm)
+                if log_level > 0:                        
+                    print("neighbour in scope", self.get_description(atm,dis))
+        return in_scope
+
+    def get_neighbours(self,coord,rnge,atoms=None,ishtml=False):
+        a = ""
+        if atoms == None:
+            atoms = self.lines
+        for atm in atoms:
+            crd = v3.VectorThree(float(atm["x"]),float(atm["y"]),float(atm["z"]))
+            dis = coord.distance(crd)
+            if dis >= rnge[0] and dis <= rnge[1]:
+                desc = self.get_description(atm,dis)
+                if desc not in a:
+                    if ishtml:
+                        a+="<br>......"+ desc
+                    else:
+                        a+="\n......"+desc
+        return a
+
     def toJson(self):
         return json.dumps(self, default=lambda o: o.__dict__)
     

@@ -5,11 +5,18 @@ This shows projections
 
 """
 ################### USER INPUTS #######################
-which_examples = [0,1,2,3,4] # could be 0-6
+which_examples = [0] # could be 0-6
 interp_method="linear"
 ########### A description of the examples #############
 examples = []
 append = ""
+
+examples.append(["Fig01-proj-7a6a"+append,"7a6a",                  
+                  [
+                    ("xy","",(1,1)),("yz","",(1,2)),("zx","",(1,3)),                    
+                    ],
+                  (1,3),
+                  ("xy","yz","zx")])       #0
 
 examples.append(["Fig01-proj-6eex"+append,"6eex",                  
                   [
@@ -53,13 +60,13 @@ examples.append(["Fig03-proj_a-6axz"+append,"6axz",
 
 examples.append(["Fig03-proj-6axz"+append,"6axz",                  
                   [
-                    ("xy","xy",(1,1)),("yz","yz",(1,2)),("zx","zx",(1,3)),
-                    ("xya","xy",(2,1)),("yza","yz",(2,2)),("zxa","zx",(2,3)),
-                    ("xy","",(3,1)),("yz","",(3,2)),("zx","",(3,3)),
-                    ("","xy",(4,1)),("","yz",(4,2)),("","zx",(4,3)),
+                    ("zx","zx",(1,1)),
+                    ("zxa","zx",(1,2)),
+                    #("xy","",(3,1)),("yz","",(3,2)),("zx","",(3,3)),
+                    #("","xy",(4,1)),("","yz",(4,2)),("","zx",(4,3)),
                     ],
-                  (4,3),
-                  ("xy","yz","zx","xy","yz","zx","","","","","","")])       #3
+                  (1,2),
+                  ("","")])#,"","","","","","")])       #3
 
 examples.append(["Fig03-proj-6kj1"+append,"6kj1",                  
                   [
@@ -178,7 +185,7 @@ for which_example in which_examples:
   fig.update_yaxes(scaleanchor="x",scaleratio=1)    
   fig.update_xaxes(scaleanchor="y",scaleratio=1)
   rows, cols =plot_config[0],plot_config[1]
-  wdth = 2000
+  wdth = 3000
   hight = int(wdth * rows/cols)
   img_nam = EG_DIR +"eg003_eg_" + plotid + ".jpg"
   html_nam = EG_DIR +"eg003_eg_" + plotid + ".html"

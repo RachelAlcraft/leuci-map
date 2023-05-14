@@ -79,6 +79,25 @@ class MapFunctions(object):
         vals = self.interper.get_val_slice(crs_coords,deriv=deriv)        
         return vals
     
+    def get_slice_neighbours(self,central, linear, planar, width, samples,rnge,log_level=0):
+        #############        
+        # objects needed
+        spc = space.SpaceTransform(central, linear, planar)
+        gm = grid.GridMaker()        
+        #########                                        
+        u_coords = gm.get_unit_grid(width,samples)                
+        xyz_coords = spc.convert_coords(u_coords)                
+        in_scope = self.pobj.get_inscope_atoms(central,width+rnge[1],log_level)                
+        naybs = []
+        for i in range(len(xyz_coords)):
+            row = []
+            for j in range(len(xyz_coords[0])):
+                coord = xyz_coords[i][j]                
+                nayb = self.pobj.get_neighbours(coord,rnge,in_scope)
+                row.append(nayb)
+            naybs.append(row)
+        return naybs
+            
     def get_xyz(self,crs_coords):
         xyz_coords = self.crs_spc.crs_to_xyz(crs_coords)        
         return xyz_coords

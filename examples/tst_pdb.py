@@ -60,9 +60,23 @@ def query_pdb():
         key_next = my_pdb.get_next_key(key_next)
         print(i,key_next)
 
-    key = "A:707@C.A"
+    key = "A:35@C.A"
     atc = my_pdb.get_atm_key(key)
     print(atc)
+
+    key_next = my_pdb.get_next_key(key,-1)
+    key_next = my_pdb.get_next_key("",-1)
+    print("KEY=",key_next)    
+    atc = my_pdb.get_atm_key(key_next)
+    print("DIC=",atc)
+    #aap = atc["aa"]              
+
+    key = "A:35@x.A"
+    atc = my_pdb.get_atm_key(key)
+    print(atc)
+    cc = my_pdb.get_coords_key(key)
+    print(cc)
+    atc = my_pdb.get_atm_key(key)                
     
 
             
