@@ -37,6 +37,10 @@ class MapLoader(object):
         self.values_loading = False
         self.has_both = True
         self.mfunc = None
+        self.mean = 0
+        self.std = 1
+        self.mean_diff = 0
+        self.std_diff = 1
         # PRIVATE INTERFACE
         self._directory = directory        
         self._cif=cif
@@ -166,7 +170,9 @@ class MapLoader(object):
             if self.has_both:
                 with open(self._filepath_diff, mode='rb') as file:
                     self._diff_binary = file.read()
-            self._create_mapheader()            
+            
+            self._create_mapheader(self._ccp4_binary)            
+            
             return True
         except Exception as e:
             print("Error loading map", str(e))
@@ -183,12 +189,12 @@ class MapLoader(object):
                     print("Waiting for load values", len(self.mobj.values), len(self.mobj.diff_values))
         return self.values_loaded
 
-    def load_values(self, diff=True):
+    def load_values(self, diff=True, adj_zero=True):
         try:            
             self.values_loading = True
-            self._create_mapvalues(False)
+            self._create_mapvalues(False,adj_zero=adj_zero)
             if diff and self.has_both:
-                self._create_mapvalues(True)            
+                self._create_mapvalues(True,adj_zero=adj_zero)
             if not self.has_both:
                 self.mobj.diff_values = []
             self.values_loading = False
@@ -256,9 +262,9 @@ class MapLoader(object):
                 
         
 
-    def _create_mapheader(self):
+    def _create_mapheader(self, ccp4_binary):
         num_labels = 0
-        num_sym = 0
+        num_sym = 0        
         headers = [] #https://www.ccp4.ac.uk/html/maplib.html#description
         xheaders = [] 
         self.mobj.header_as_string = ""
@@ -303,13 +309,13 @@ class MapLoader(object):
             val = ""
             if not header == "X":
                 if typ == "int":
-                    val = int.from_bytes(self._ccp4_binary[i:i+inc], byteorder='little', signed=True)
+                    val = int.from_bytes(ccp4_binary[i:i+inc], byteorder='little', signed=True)
                     self.mobj.map_header[header] = val
                 elif typ == "double":
-                    val = struct.unpack('f', self._ccp4_binary[i:i+inc])[0]
+                    val = struct.unpack('f', ccp4_binary[i:i+inc])[0]
                     self.mobj.map_header[header] = val
                 elif typ == "string":
-                    val = self._ccp4_binary[i:i+inc].decode("utf-8") 
+                    val = ccp4_binary[i:i+inc].decode("utf-8") 
                     self.mobj.map_header[header] = val
                     
                 if len(header) > 7:
@@ -335,13 +341,13 @@ class MapLoader(object):
         for header, typ,inc  in xheaders:
             if not header == "X":
                 if typ == "int":
-                    val = int.from_bytes(self._ccp4_binary[i:i+inc], byteorder='little', signed=True)
+                    val = int.from_bytes(ccp4_binary[i:i+inc], byteorder='little', signed=True)
                     self.mobj.map_header[header] = val
                 elif typ == "double":
-                    val = struct.unpack('f', self._ccp4_binary[i:i+inc])[0]
+                    val = struct.unpack('f', ccp4_binary[i:i+inc])[0]
                     self.mobj.map_header[header] = val
                 elif typ == "string":
-                    val = self._ccp4_binary[i:i+inc].decode("utf-8") 
+                    val = ccp4_binary[i:i+inc].decode("utf-8") 
                     self.mobj.map_header[header] = val
                     
                 if len(header) > 7:
@@ -351,7 +357,7 @@ class MapLoader(object):
             i+=inc
         
                         
-    def _create_mapvalues(self, diff):
+    def _create_mapvalues(self, diff, adj_zero=True):
         use_binary = self._ccp4_binary
         vals = []
         #vals = {} #zeros alternative
@@ -382,6 +388,13 @@ class MapLoader(object):
                     else:
                         self.mobj.values[f,m,s] = val
                             
+        #if adj_zero:
+        #    if diff:
+        #        zro = 
+        #        self.mobj.diff_values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
+        #    else:
+        #        self.mobj.values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
+
         """
         Blength = self.mobj.map_header["01_NC"] * self.mobj.map_header["02_NR"] * self.mobj.map_header["03_NS"]
         Bstart = len(self._ccp4_binary) - (4 * Blength)

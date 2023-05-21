@@ -1,4 +1,6 @@
 biopython
 numpy
+matplotlib
+plotly
 leuci-xyz
 leuci-pol

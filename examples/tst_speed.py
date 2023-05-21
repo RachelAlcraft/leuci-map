@@ -27,7 +27,7 @@ import datetime
 ########## INPUTS #################
 pdb_codes = ["6eex","1ejg"]
 width=8
-samples=101
+samples=11
 interp_methods = ["nearest","linear","cubic","bspline"]
 derivs = [0,1,2]
 #interp_methods = ["linear","bspline"]

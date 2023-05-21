@@ -6,7 +6,7 @@ Using WSL the show() functions creates an html page on localhost
 
 """
 ################### USER INPUTS #######################
-which_examples = [5] # could be 0-6
+which_examples = [2] # could be 0-6
 interp_method = "linear"
 width = 8           # in angstrom
 samples = 100       # number of sample points along each axis to interpolate
@@ -95,6 +95,7 @@ for which_example in which_examples:
   cc,cl,cp = examples[which_example][2][0],examples[which_example][2][1],examples[which_example][2][2]
   plots = examples[which_example][3]  
   plot_config = examples[which_example][4]
+  print("PLOT CONFIG=",plot_config  )
   names = examples[which_example][5]
   print(pdb_code,cc,cl,cp,plots,plot_config,names)
   ##########################################################  
