@@ -19,7 +19,7 @@ linear_atom = "A:707@CA.A"
 planar_atom = "A:707@O.A"
 interpolation = "bspline"
 width = 8 #Angstrom
-samples = 100
+samples = 40
 depth_samples = 10
 file_output2d = "slice-2d.html"
 file_output3d = "slice-3d.html"
@@ -39,7 +39,8 @@ import leuci_map.mapobject as mobj
 import leuci_map.maploader as moad
 import leuci_map.mapfunctions as mfun
 import leuci_map.mapsmanager as mman
-import leuci_map.mapplotter as mpl
+#import leuci_map.mapplotter as mpl
+import leuci_map.mapplothelp as mph
 
 # find relative path for data
 from pathlib import Path
@@ -58,13 +59,17 @@ pp = v3.VectorThree().from_coords(ml.pobj.get_coords_key(planar_atom))
 
 # 2d plot (s)
 filename = RESDIR + file_output2d
-mplot = mpl.MapPlotter(mf, filename,interpolation,samples,width,cc,ll,pp,(1,1))
-mplot.add_plot_slice("density",2,-1,0.9, 0.9,True,"BW","density",(1,1)) 
-mplot.make_plot_slices(log_level=1)   
-
+vals = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0)
+mplot = mph.MapPlotHelp(filename)
+# add naybs
+mfunc = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj, "linear") #the default method is linear
+naybs = mfunc.get_slice_neighbours(cc,ll,pp,width,samples,[0,1],log_level=1)                        
+mplot.make_plot_slice_2d(vals,min_percent=0.9,max_percent=0.9,title="ad my",samples=samples,width=width,points=[cc,ll,pp],naybs=naybs)
+mplot = mph.MapPlotHelp(filename + "_no.html")
+mplot.make_plot_slice_2d(vals,min_percent=0.9,max_percent=0.9,title="ad my",samples=samples,width=width,points=[cc,ll,pp])
 # 3d plot
 filename = RESDIR + file_output3d
-mplot = mpl.MapPlotter(mf, filename,interpolation,samples,width,cc,ll,pp,(1,1))
+mplot = mph.MapPlotHelp(filename)
 vals,coords = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,depth_samples=depth_samples)
-mplot.make_plot_slice_3d("density",vals,coords,min_percent=0.9, max_percent=0.9,hue="GBR",centre=True,title="Leucippus Plot 3d")   
+mplot.make_plot_slice_3d(vals,min_percent=0.9,max_percent=0.9,title="3d my")
 

@@ -85,6 +85,12 @@ class MapLoader(object):
             #self.em_loaded = True
             return True # it doesn;t NOT exists anyway
     
+    def success(self):
+        if exists(self._filepath) and exists(self._filepath_ccp4):
+            return True
+        else:
+            return False
+
     def download(self):                
         if not self.exists_pdb():
             if not self.already_started_pdb():
@@ -111,10 +117,18 @@ class MapLoader(object):
             os.remove(self._filepath+".start.txt")
         if exists(self._filepath_ccp4+".start.txt"):
             os.remove(self._filepath_ccp4+".start.txt")
-        with open(self._filepath + ".done.txt","w") as fw_pdb:
-            fw_pdb.write("done")
-        with open(self._filepath_ccp4 + ".done.txt","w") as fw_map:
-            fw_map.write("done")
+        if exists(self._filepath):
+            with open(self._filepath + ".done.txt","w") as fw_pdb:
+                fw_pdb.write("done")
+        else:
+            with open(self._filepath + ".failed.txt","w") as fw_pdb:
+                fw_pdb.write("failed")
+        if exists(self._filepath_ccp4):
+            with open(self._filepath_ccp4 + ".done.txt","w") as fw_map:
+                fw_map.write("done")
+        else:
+            with open(self._filepath_ccp4 + ".failed.txt","w") as fw_map:
+                fw_map.write("failed")
                 
     def download_pdb(self):
         self._fetch_pdbdata()
@@ -220,13 +234,16 @@ class MapLoader(object):
             return False
         return True
         
-    def _fetch_maplink_xray(self):                
-        if not exists(self._filepath_ccp4):            
-            urllib.request.urlretrieve(self.mobj.ccp4_link, self._filepath_ccp4)
-        if not exists(self._filepath_diff):            
-            urllib.request.urlretrieve(self.mobj.diff_link, self._filepath_diff)
-        self.mobj.em_code = self.mobj.pdb_code
-        self.em_code = self.mobj.pdb_code
+    def _fetch_maplink_xray(self):
+        try:
+            if not exists(self._filepath_ccp4):            
+                urllib.request.urlretrieve(self.mobj.ccp4_link, self._filepath_ccp4)
+            if not exists(self._filepath_diff):            
+                urllib.request.urlretrieve(self.mobj.diff_link, self._filepath_diff)
+            self.mobj.em_code = self.mobj.pdb_code
+            self.em_code = self.mobj.pdb_code
+        except Exception as e:
+            print(e)
 
                         
     def _fetch_maplink_em(self):     

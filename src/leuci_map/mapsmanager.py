@@ -34,7 +34,7 @@ class MapsManager:
     def set_cache(cls,cache):
         cls.CACHE = cache
     
-    ##  Map Store ##
+    ##  Map Store ##    
     def get_or_create(cls,pdb_code,file=1,header=1,values=1): #0 is no, 1 is in thread, 2 is new thread
         po = None
         if cls.exists_map(pdb_code):
