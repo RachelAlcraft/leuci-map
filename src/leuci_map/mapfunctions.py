@@ -68,7 +68,7 @@ class MapFunctions(object):
         if create_interp:
             if log_level > 0:
                 print("New interper, Fos=",fo,"Fcs=",fc,"mains=",vs,"diffs=",ds)
-            self.interper = pol.create_interpolator(interp_method,self.interper_vals,self.mobj.F,self.mobj.M,self.mobj.S,log_level=log_level,as_sd=self.as_sd)
+            self.interper = pol.create_interpolator(interp_method,self.interper_vals,(self.mobj.F,self.mobj.M,self.mobj.S),log_level=log_level,as_sd=self.as_sd)
         self.interp_method = interp_method
         self.fo = fo
         self.fc = fc
@@ -76,14 +76,14 @@ class MapFunctions(object):
     def max_min(self):
         return self.interper.min,self.interper.max
 
-    def get_slices(self,central, linear, planar, width, samples, interp_method, derivs=[0], fo=2,fc=-1,log_level=0,degree=-1):
+    def get_slices(self,central, linear, planar, width, samples, interp_method, derivs=[0], fo=2,fc=-1,log_level=0,degree=-1,ret_type="np"):
         vals = []
         for deriv in derivs:
-            val = self.get_slice(central, linear, planar, width, samples, interp_method, deriv, fo,fc,log_level,degree)
+            val = self.get_slice(central, linear, planar, width, samples, interp_method, deriv, fo,fc,log_level,degree,ret_type=ret_type)
             vals.append(val)
         return vals
 
-    def get_slice(self,central, linear, planar, width, samples, interp_method, depth_samples=1, deriv=0, fo=2,fc=-1,log_level=0):
+    def get_slice(self,central, linear, planar, width, samples, interp_method, depth_samples=1, deriv=0, fo=2,fc=-1,log_level=0, ret_type="np"):
         # change interpolator if necessary        
         self.make_interper_if_needed(interp_method,log_level,fo,fc)        
         #############        
@@ -95,10 +95,10 @@ class MapFunctions(object):
         xyz_coords = spc.convert_coords(u_coords)
         crs_coords = self.crs_spc.convert_coords_to_crs(xyz_coords)
         if depth_samples > 1:    
-            vals = self.interper.get_val_slice3d(crs_coords,deriv=deriv)        
+            vals = self.interper.get_val_slice3d(crs_coords,deriv=deriv,ret_type=ret_type)        
             return vals,xyz_coords
         else:
-            vals = self.interper.get_val_slice(crs_coords,deriv=deriv)            
+            vals = self.interper.get_val_slice(crs_coords,deriv=deriv,ret_type=ret_type)        
             return vals
     
     def get_slice_neighbours(self,central, linear, planar, width, samples,rnge,log_level=0):

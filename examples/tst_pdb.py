@@ -20,7 +20,7 @@ from leuci_map import pdbobject as pobj
 from leuci_map import maploader as moad
 
 ########## INPUTS #################
-pdb_code = "1dy5"
+pdb_code = "6eex"
 
 ########## EXAMPLE #################
 def query_pdb():

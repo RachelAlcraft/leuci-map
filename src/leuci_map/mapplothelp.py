@@ -24,6 +24,14 @@ class MapPlotHelp(object):
         self.plots_3d.append((vals,tag))
                     
     def make_plot_slice_3d(self,vals,min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 3d"):
+        """
+        Takes a mat4d object and plots it in plotly
+
+        Input
+        ---------
+        vals : mat3d
+        """
+
         #https://plotly.com/python/3d-isosurface-plots/
         #turn data into scatter for iso_surface
         xs = []
@@ -42,7 +50,7 @@ class MapPlotHelp(object):
                 for k in range(a):
                     val = 0
                     if k < c:
-                        val = vals.get(i,j,k)
+                        val = vals.get(i,j,k=k)
                         minv = min(minv,val)
                         maxv = max(maxv,val)
                     xs.append(i)
@@ -105,9 +113,18 @@ class MapPlotHelp(object):
         else:
             fig.write_image(self.filename,width=2000,height=2000)
 
-    def make_plot_slice_2d(self,vals,points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 2d",samples=-1,width=-1):
+    def make_plot_slice_2d(self,vals3d,points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 2d",samples=-1,width=-1):
+        """
+        Takes a mat4d object and plots it in plotly
+
+        Input
+        ---------
+        vals : mat3d
+        """
         #https://plotly.com/python/3d-isosurface-plots/
         #turn data into scatter for iso_surface        
+        vals = vals3d.get_as_np()[:,:,0].tolist()
+        print(type(vals))
         minv = 1000
         maxv = -1000
 
