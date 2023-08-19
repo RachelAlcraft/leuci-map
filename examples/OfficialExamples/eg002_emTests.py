@@ -92,7 +92,7 @@ for which_example in which_examples:
       ml.load_values()
     if not ml.values_loaded:
       print("!!!! There is a problem loading",pdb_code)    
-    mf = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj,"linear",degree=degree)
+    mf = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj,"linear")
     loadeds[pdb_code] = mf
   ###############################################################################
   # Create the 3 coordinates for orientation  
@@ -136,11 +136,11 @@ for which_example in which_examples:
     print("Plot details=",deriv,fo,fc,min_per,max_per)    
     vals = [[]]
     if deriv == "density":    
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc,degree=degree)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=fo,fc=fc,ret_type="2d")
     elif deriv == "radient":
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc,degree=degree)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1,fo=fo,fc=fc,ret_type="2d")
     elif deriv == "laplacian":
-      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc,degree=degree)
+      vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=2,fo=fo,fc=fc,ret_type="2d")
     ###############################################################################    
     # Showing the plots in plotly
     # reference: https://plotly.com/python/contour-plots/

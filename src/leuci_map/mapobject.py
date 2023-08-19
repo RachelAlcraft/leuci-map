@@ -23,6 +23,7 @@ class MapObject(object):
         self.values = []
         #self.npy_values = []
         self.diff_values = [] 
+        self.diff_has = 0
         #self.npy_diff_values = []
         self.F = -1 #fastest axis
         self.M = -1 #middle axis        

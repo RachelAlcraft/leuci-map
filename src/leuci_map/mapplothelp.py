@@ -44,7 +44,7 @@ class MapPlotHelp(object):
         minv = 1000
         maxv = -1000
 
-        a,b,c = vals.shape()
+        a,b,c = vals.shape
         for i in range(a):
             for j in range(b):
                 for k in range(a):
@@ -113,7 +113,7 @@ class MapPlotHelp(object):
         else:
             fig.write_image(self.filename,width=2000,height=2000)
 
-    def make_plot_slice_2d(self,vals3d,points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 2d",samples=-1,width=-1):
+    def make_plot_slice_2d(self,vals2d,points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 2d",samples=-1,width=-1):
         """
         Takes a mat4d object and plots it in plotly
 
@@ -123,7 +123,7 @@ class MapPlotHelp(object):
         """
         #https://plotly.com/python/3d-isosurface-plots/
         #turn data into scatter for iso_surface        
-        vals = vals3d.get_as_np()[:,:,0].tolist()
+        vals = vals2d.tolist()
         print(type(vals))
         minv = 1000
         maxv = -1000

@@ -82,7 +82,7 @@ def slices(args):
                 pp = v3.VectorThree().from_coords(ml.pobj.get_coords_key(pla))            
                 # 2d plot (s)
                 filename2 = f"2d_matrices_{count}_{pdb_code}"                
-                vals2d = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,ret_type="3d")
+                vals2d = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,ret_type="2d")
                 print(type(vals2d))
                 np.save(filename2,vals2d)                                
                 filename2 = f"2d_html_{count}_{pdb_code}.html"

@@ -24,9 +24,9 @@ import leuci_map.mapfunctions as mfun
 central = v3.VectorThree(1,2,3)
 linear = v3.VectorThree(2,2,2)
 planar = v3.VectorThree(3,2,3)
-#pdb_code = "6eex" #small xray
+pdb_code = "6eex" #small xray
 #pdb_code = "6axz" #em
-pdb_code = "7uly" #em
+#pdb_code = "7uly" #em
 width=6
 samples=10
 interp_method="cubic"
@@ -46,6 +46,7 @@ def single_slice():
             mf = mfun.MapFunctions(pdb_code,po.mobj,po.pobj,interp_method)
             print("Creating slice density", pdb_code)
             vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0)
+            vals = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=0,fo=1,fc=-1)
             print(vals)
             print("Creating slice radient", pdb_code)
             rads = mf.get_slice(central,linear,planar,width,samples,interp_method,deriv=1)

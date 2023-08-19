@@ -45,13 +45,15 @@ class MapFunctions(object):
         create_interp = False
         if self.interper_vals == []:
             create_interp = True
-            if self.mobj.diff_values == [] or fo==2 and fc == -1:
+            #if self.mobj.diff_values == [] or fo==2 and fc == -1:
+            if self.mobj.diff_has == 0 or fo==2 and fc == -1:
                 for i in range(len(self.mobj.values)):
                     self.interper_vals.append(self.mobj.values[i])
             else:
                 calc_fofc = True
                 
-        elif self.mobj.diff_values != []:
+        elif self.mobj.diff_has != 0:
+        #elif self.mobj.diff_values == []:
             if (self.interp_method != interp_method or self.fo != fo or self.fc != fc):
                 calc_fofc = True
                 create_interp = True

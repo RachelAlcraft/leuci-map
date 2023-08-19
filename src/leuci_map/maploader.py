@@ -390,6 +390,7 @@ class MapLoader(object):
 
         if diff:
             self.mobj.diff_values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
+            self.mobj.diff_has = self.mobj.F*self.mobj.M*self.mobj.S
         else:
             self.mobj.values = np.zeros((self.mobj.F,self.mobj.M,self.mobj.S))
 
