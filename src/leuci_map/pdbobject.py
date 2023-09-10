@@ -55,7 +55,8 @@ class PdbObject(object):
             for atm in self.lines:        
                 if atm["chain"] == ch and atm["rid"] == rid and atm["atm"] == am and atm["version"] == ver:        
                     return atm
-        except:
+        except Exception as e:
+            print("Error finding key",e)
             return {}
     
     def get_key(self,atm):
@@ -83,9 +84,9 @@ class PdbObject(object):
     # if we add lines from a cif file I will do something different    
     def add_line_string(self,line):
         #ATOM    435  OE1AGLU A  23      12.418  13.330   0.541  0.58  7.57           O  
-        if "ATOM" in line[:8] or "HETATM" in line[:8]:
-            aid = line[8:13].strip()
-            am = line[13:16].strip()
+        if "ATOM" in line[:6] or "HETATM" in line[:8]:                        
+            aid = line[6:12].strip()
+            am = line[12:16].strip()
             ver = line[16:17].strip()
             aa = line[17:21].strip()
             ch = line[21:23].strip()
@@ -112,6 +113,9 @@ class PdbObject(object):
             atm["bfactor"] = bf
             atm["element"] = ele        
             self.lines.append(atm)
+            #if "HETATM" in line[:8]:
+            #    print(line)
+            #    print(atm)
 
     def get_atom_coords(self):
         atoms = []

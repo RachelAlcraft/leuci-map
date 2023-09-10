@@ -16,20 +16,24 @@ class MapPlotHelp(object):
         self.filename = filename                
         self.plots_2d = []
         self.plots_3d = []                
-    
+            
     def add_plot_slice_2d(self,vals,tag):
         self.plots_2d.append((vals,tag))
     
     def add_plot_slice_3d(self,vals,tag):
         self.plots_3d.append((vals,tag))
                     
-    def make_plot_slice_3d(self,vals,min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 3d"):
+    def make_plot_slice_3d(self,vals,min_percent=1, max_percent=1,hue="GBR",title="Leucippus Plot 3d"):
         """
-        Takes a mat4d object and plots it in plotly
+        Takes a mat3d object and plots it in plotly
 
         Input
         ---------
         vals : mat3d
+        min_percent=1
+        max_percent=1
+        hue = GBR/GRB/BW/WB/RB/BR
+        title="Leucippud Plot 3d
         """
 
         #https://plotly.com/python/3d-isosurface-plots/
@@ -44,7 +48,7 @@ class MapPlotHelp(object):
         minv = 1000
         maxv = -1000
 
-        a,b,c = vals.shape
+        a,b,c = vals.shape()
         for i in range(a):
             for j in range(b):
                 for k in range(a):
@@ -57,31 +61,11 @@ class MapPlotHelp(object):
                     ys.append(j)
                     zs.append(k)
                     values.append(val)
-
-                            
+                                    
         
-        if minv == maxv or minv >- 0:
-            d0 = 0.5
-        else:
-            d0 = (0 - minv) / (maxv - minv)
-        
-        d1 = (1-d0)/3
-        d2 = 2*(1-d0)/3
-        #colorscale=[(0, "grey"), (d0, "snow"), (d0+0.2, "cornflowerblue"),(0.9, "crimson"),(1.0, "rgb(100,0,0)")],
-        c0 = "rgba(119,136,153,1)"
-        c1 = "rgba(240,248,255,0)"
-        c2 = "rgba(100,149,237,0.5)"
-        c3 = "rgba(220,20,60,0.9)"
-        c4 = "rgba(100,0,0,1)"
-
-
-        colorscale=[
-            (0, c0),
-            (d0, c1),
-            (d0+0.2, c2),
-            (0.9, c3),
-            (1, c4)]
-
+        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,minv,maxv)        
+        colorscale=self.__get_colors__(hue,d0,d1,d2)
+                
         fig= go.Figure(data=go.Isosurface(
         x=xs,
         y=ys,
@@ -91,15 +75,15 @@ class MapPlotHelp(object):
         showscale=True,
         showlegend=False,        
         opacity=0.6,
-        surface_count=20,
+        surface_count=10,
         caps=dict(x_show=False, y_show=False),
-        isomin=minv * min_percent,
-        isomax=maxv * max_percent,
+        isomin=absmin,
+        isomax=absmax,
         ))
         
         fig.update_xaxes(showticklabels=False,visible=False) # hide all the xticks
         fig.update_yaxes(showticklabels=False,visible=False) # hide all the xticks
-        fig.update_yaxes(scaleanchor="x",scaleratio=1)    
+        fig.update_yaxes(scaleanchor="x",scaleratio=1)
         fig.update_xaxes(scaleanchor="y",scaleratio=1)
 
         fig.update_layout(title=dict(text=title))
@@ -108,58 +92,80 @@ class MapPlotHelp(object):
         #print(values)
         if self.filename == "SHOW":
             fig.show()
+        elif self.filename == "FIG":
+            return fig
         elif ".html" in self.filename:
             fig.write_html(self.filename)
         else:
             fig.write_image(self.filename,width=2000,height=2000)
 
-    def make_plot_slice_2d(self,vals2d,points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",centre=True,title="Leucippus Plot 2d",samples=-1,width=-1):
+    def make_plot_slice_2d(self,vals2d,plot_type="contour",points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",title="Leucippus Plot 2d",samples=-1,width=-1):
         """
-        Takes a mat4d object and plots it in plotly
+        Takes a mat2d object and plots it in plotly
 
         Input
         ---------
-        vals : mat3d
-        """
+        vals : mat2d
+        plottype="countour" or heatmap
+        points=[] a selection of points to add ontop of plot
+        naybs=[] neighbours matched per value points
+        min_percent=1
+        max_percent=1
+        hue = GBR/GRB/BW/WB/RB/BR
+        title="Leucippud Plot 2d
+        samples=-1 needed to place the points in the right place
+        width=-1 needed to place the points in the right place
+        """        
         #https://plotly.com/python/3d-isosurface-plots/
         #turn data into scatter for iso_surface        
         vals = vals2d.tolist()
-        print(type(vals))
-        minv = 1000
-        maxv = -1000
-
+        #print(type(vals))
+        
         fig = make_subplots(rows=1, cols=1,subplot_titles=[title],horizontal_spacing=0.05,vertical_spacing=0.05)
 
         mind,maxd = 1000,-1000    
         for i in range(len(vals)):
             for j in range(len(vals[0])):        
                 mind = min(vals[i][j],mind)
-                maxd = max(vals[i][j],maxd)
-        if maxd == mind:
-            d0 = 0.5
-        else:
-            d0 = (0 - mind) / (maxd - mind)            
-        absmin = mind*min_percent
-        absmax = maxd*max_percent   
+                maxd = max(vals[i][j],maxd)        
+        
+        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,mind,maxd)        
+        colorscale=self.__get_colors__(hue,d0,d1,d2)
 
         if len(naybs) > 0:
-            data_vals = go.Contour(z=vals,showscale=False, 
-                                colorscale=[(0, "grey"), (d0, "snow"), (d0+0.2, "cornflowerblue"),(0.9, "crimson"),(1.0, "rgb(100,0,0)")],
+            if plot_type == "contour":
+                data_vals = go.Contour(z=vals,showscale=False, 
+                                colorscale=colorscale,
                                 contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
                                 text=naybs,   
                                 hovertemplate='......%{z:.4f}<br>%{text}',
                                 line=dict(width=0.5,color="gray"),
                                 zmin=absmin,zmax=absmax,name='')
+            elif plot_type == "heatmap":
+                data_vals = go.Heatmap(z=vals,showscale=False, 
+                                colorscale=colorscale,
+                                #contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
+                                text=naybs,   
+                                hovertemplate='......%{z:.4f}<br>%{text}',
+                                #line=dict(width=0.5,color="gray"),
+                                zmin=absmin,zmax=absmax,name='')
         else:
-            data_vals = go.Contour(z=vals,showscale=False, 
-                                colorscale=[(0, "grey"), (d0, "snow"), (d0+0.2, "cornflowerblue"),(0.9, "crimson"),(1.0, "rgb(100,0,0)")],
+            if plot_type == "contour":
+                data_vals = go.Contour(z=vals,showscale=True, 
+                                colorscale=colorscale,
                                 contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
                                 hovertemplate='......%{z:.4f}',
                                 line=dict(width=0.5,color="gray"),
                                 zmin=absmin,zmax=absmax,name='')
+            elif plot_type == "heatmap":
+                data_vals = go.Heatmap(z=vals,showscale=True, 
+                                colorscale=colorscale,
+                                #contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
+                                hovertemplate='......%{z:.4f}',
+                                #line=dict(width=0.5,color="gray"),
+                                zmin=absmin,zmax=absmax,name='')
 
-        
-        
+                        
         fig.add_trace(data_vals,row=1,col=1)
         if len(points) == 3:
             data_scatter = self.add_points(points,samples,width)
@@ -172,8 +178,10 @@ class MapPlotHelp(object):
         #print(values)
         if self.filename == "SHOW":
             fig.show()
+        elif self.filename == "FIG":
+            return fig
         elif ".html" in self.filename:
-            fig.write_html(self.filename)
+            fig.write_html(self.filename)        
         else:
             fig.write_image(self.filename,width=2000,height=2000)
 
@@ -208,6 +216,43 @@ class MapPlotHelp(object):
         data_scatter = go.Scatter(x=scatterX,y=scatterY,mode="markers",marker=dict(color="yellow",size=5),showlegend=False,hoverinfo='skip',hovertemplate='',name='')            
 
         return data_scatter
+
+    def __get_levels__(self,min_rr, max_rr, min_vv, max_vv):        
+        absmin = min_vv*min_rr        
+        absmax = max_vv*max_rr          
+        if absmin == absmax:
+            d0 = 0.5
+        elif absmin > 0:
+            d0 = 0
+        else:
+            d0 = (0 - absmin) / (absmax - absmin)                            
+        d1 = d0 + ((1-d0)/3)
+        d2 = d0 + (2*(1-d0)/3)                        
+        return absmin,absmax,d0,d1,d2
+    
+    def __get_colors__(self,hue,d0,d1,d2):
+        if hue == "GBR":
+            return [(0, "grey"), (d0, "snow"), (d1, "cornflowerblue"),(d2, "crimson"),(1.0, "rgb(100,0,0)")]
+        if hue == "GRB":
+            return [(0, "grey"), (d0, "snow"), (d1, "crimson"),(d2, "cornflowerblue"),(1.0, "navy")]
+        elif hue == "BW":
+            return [(0, "black"),(1.0, "snow")]
+        elif hue == "WB":
+            return [(0, "snow"),(1.0, "black")]
+        elif hue == "RB":
+            if d0 <= 0:
+                return [(0,"rgb(100,0,0)"),(0.0001, "crimson"),(0.5,"snow"),(0.999, "cornflowerblue"),(1.0,"navy")]
+            else:
+                return [(0,"rgb(100,0,0)"),(0.0001, "crimson"),(d0,"snow"),(0.999, "cornflowerblue"),(1.0,"navy")]
+        elif hue == "BR":
+            if d0 <= 0:
+                return [(0,"navy"),(0.0001, "cornflowerblue"),(0.5,"snow"),(0,999, "crimson"),(1.0,"rgb(100,0,0)")]
+            else:
+                return [(0,"navy"),(0.0001, "cornflowerblue"),(d0,"snow"),(0.999, "crimson"),(1.0,"rgb(100,0,0)")]
+
+        
+    
+
             
     
 

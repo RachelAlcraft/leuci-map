@@ -95,6 +95,11 @@ def slices(args):
                 np.save(filename3,vals3d)
                 filename3 = f"3d_html_{count}_{pdb_code}.html"                
                 mplot = mph.MapPlotHelp(filename3)                
+
+                print(vals3d)
+
+
+
                 mplot.make_plot_slice_3d(vals3d,min_percent=0.9, max_percent=0.9,title=pdb_code+":"+atoms)
 
 #####################################################################################################                

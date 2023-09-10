@@ -59,7 +59,7 @@ pp = v3.VectorThree().from_coords(ml.pobj.get_coords_key(planar_atom))
 
 # 2d plot (s)
 filename = RESDIR + file_output2d
-vals = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0)
+vals = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,ret_type="2d")
 mplot = mph.MapPlotHelp(filename)
 # add naybs
 mfunc = mfun.MapFunctions(pdb_code,ml.mobj,ml.pobj, "linear") #the default method is linear
@@ -70,6 +70,6 @@ mplot.make_plot_slice_2d(vals,min_percent=0.9,max_percent=0.9,title="ad my",samp
 # 3d plot
 filename = RESDIR + file_output3d
 mplot = mph.MapPlotHelp(filename)
-vals,coords = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,depth_samples=depth_samples)
+vals,coords = mf.get_slice(cc,ll,pp,width,samples,interpolation,deriv=0,depth_samples=depth_samples,ret_type="3d")
 mplot.make_plot_slice_3d(vals,min_percent=0.9,max_percent=0.9,title="3d my")
 
