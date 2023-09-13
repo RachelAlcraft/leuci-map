@@ -23,17 +23,20 @@ class MapPlotHelp(object):
     def add_plot_slice_3d(self,vals,tag):
         self.plots_3d.append((vals,tag))
                     
-    def make_plot_slice_3d(self,vals,min_percent=1, max_percent=1,hue="GBR",title="Leucippus Plot 3d"):
+    def make_plot_slice_3d(self,vals,min_percent=1, max_percent=1,
+                            hue="GBR",title="Leucippus Plot 3d",levels=20,
+                            transparency="medium"):
         """
         Takes a mat3d object and plots it in plotly
 
         Input
         ---------
         vals : mat3d
-        min_percent=1
-        max_percent=1
-        hue = GBR/GRB/BW/WB/RB/BR
-        title="Leucippud Plot 3d
+        min_percent : 1
+        max_percent : 1
+        hue : GBR/GRB/BW/WB/RB/BR/GI/IG/MASK
+        title : "Leucippud Plot 3d
+        levels : 20
         """
 
         #https://plotly.com/python/3d-isosurface-plots/
@@ -63,8 +66,18 @@ class MapPlotHelp(object):
                     values.append(val)
                                     
         
-        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,minv,maxv)        
-        colorscale=self.__get_colors__(hue,d0,d1,d2)
+        #if hue == "RINGS":
+        #    minv,maxv =  -0.5,1.5
+        #    min_percent,max_percent = 1,1
+        
+        #if hue != "MASK":
+        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,minv,maxv,hue=="MASK")
+        #else:
+        #absmin,absmax,d0,d1,d2 = minv,maxv,1,1,1
+        
+        
+        
+        colorscale=self.__get_colors__(hue,d0,d1,d2,min_percent,max_percent,transparency=transparency)
                 
         fig= go.Figure(data=go.Isosurface(
         x=xs,
@@ -75,18 +88,22 @@ class MapPlotHelp(object):
         showscale=True,
         showlegend=False,        
         opacity=0.6,
-        surface_count=10,
-        caps=dict(x_show=False, y_show=False),
+        surface_count=levels,
+        caps=dict(x_show=False, y_show=False,z_show=False),
         isomin=absmin,
         isomax=absmax,
-        ))
+        ),)
         
-        fig.update_xaxes(showticklabels=False,visible=False) # hide all the xticks
-        fig.update_yaxes(showticklabels=False,visible=False) # hide all the xticks
-        fig.update_yaxes(scaleanchor="x",scaleratio=1)
-        fig.update_xaxes(scaleanchor="y",scaleratio=1)
-
-        fig.update_layout(title=dict(text=title))
+        fig.update_xaxes(showticklabels=False,visible=False,scaleanchor="x",scaleratio=1) # hide all the xticks
+        fig.update_yaxes(showticklabels=False,visible=False,scaleanchor="x",scaleratio=1) # hide all the yticks
+                                
+        fig.update_layout(title=dict(text=title),
+                            scene = dict(
+                            xaxis = dict(visible=False),
+                            yaxis = dict(visible=False),
+                            zaxis =dict(visible=False)
+                        )
+    )
 
                         
         #print(values)
@@ -99,22 +116,26 @@ class MapPlotHelp(object):
         else:
             fig.write_image(self.filename,width=2000,height=2000)
 
-    def make_plot_slice_2d(self,vals2d,plot_type="contour",points=[], naybs=[],min_percent=1, max_percent=1,hue="GBR",title="Leucippus Plot 2d",samples=-1,width=-1):
+    def make_plot_slice_2d(self,vals2d,plot_type="contour",points=[], 
+                            naybs=[],min_percent=1, max_percent=1,
+                            hue="GBR",levels=20,title="Leucippus Plot 2d",samples=-1,width=-1,
+                            transparency="no"):
         """
         Takes a mat2d object and plots it in plotly
 
         Input
         ---------
         vals : mat2d
-        plottype="countour" or heatmap
-        points=[] a selection of points to add ontop of plot
-        naybs=[] neighbours matched per value points
-        min_percent=1
-        max_percent=1
-        hue = GBR/GRB/BW/WB/RB/BR
-        title="Leucippud Plot 2d
-        samples=-1 needed to place the points in the right place
-        width=-1 needed to place the points in the right place
+        plottype : "countour" or heatmap
+        points : [] a selection of points to add ontop of plot
+        naybs : [] neighbours matched per value points
+        min_percent : 1
+        max_percent : 1
+        hue : GBR/GRB/BW/WB/RB/BR/GI/IG/MASK
+        title : "Leucippud Plot 2d
+        levels : 20
+        samples :-1 needed to place the points in the right place
+        width : -1 needed to place the points in the right place
         """        
         #https://plotly.com/python/3d-isosurface-plots/
         #turn data into scatter for iso_surface        
@@ -129,40 +150,43 @@ class MapPlotHelp(object):
                 mind = min(vals[i][j],mind)
                 maxd = max(vals[i][j],maxd)        
         
-        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,mind,maxd)        
-        colorscale=self.__get_colors__(hue,d0,d1,d2)
+        #if hue == "RINGS":
+        #    mind,maxd = -0.5,1.5
+        #    min_percent,max_percent = 1,1
+        
+        #if hue != "MASK":
+        absmin,absmax,d0,d1,d2 = self.__get_levels__(min_percent,max_percent,mind,maxd,hue=="MASK")        
+        #else:
+        #    absmin,absmax,d0,d1,d2 = mind,maxd,1,1,1
+        colorscale=self.__get_colors__(hue,d0,d1,d2,min_percent,max_percent,transparency=transparency,)
 
         if len(naybs) > 0:
             if plot_type == "contour":
                 data_vals = go.Contour(z=vals,showscale=False, 
                                 colorscale=colorscale,
-                                contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
+                                contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/levels),
                                 text=naybs,   
                                 hovertemplate='......%{z:.4f}<br>%{text}',
                                 line=dict(width=0.5,color="gray"),
                                 zmin=absmin,zmax=absmax,name='')
             elif plot_type == "heatmap":
                 data_vals = go.Heatmap(z=vals,showscale=False, 
-                                colorscale=colorscale,
-                                #contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
+                                colorscale=colorscale,                                
                                 text=naybs,   
-                                hovertemplate='......%{z:.4f}<br>%{text}',
-                                #line=dict(width=0.5,color="gray"),
+                                hovertemplate='......%{z:.4f}<br>%{text}',                                
                                 zmin=absmin,zmax=absmax,name='')
         else:
             if plot_type == "contour":
                 data_vals = go.Contour(z=vals,showscale=True, 
                                 colorscale=colorscale,
-                                contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
+                                contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/levels),
                                 hovertemplate='......%{z:.4f}',
                                 line=dict(width=0.5,color="gray"),
                                 zmin=absmin,zmax=absmax,name='')
             elif plot_type == "heatmap":
                 data_vals = go.Heatmap(z=vals,showscale=True, 
-                                colorscale=colorscale,
-                                #contours=dict(start=absmin,end=absmax,size=(absmax-absmin)/20),
-                                hovertemplate='......%{z:.4f}',
-                                #line=dict(width=0.5,color="gray"),
+                                colorscale=colorscale,                                
+                                hovertemplate='......%{z:.4f}',                                
                                 zmin=absmin,zmax=absmax,name='')
 
                         
@@ -217,9 +241,17 @@ class MapPlotHelp(object):
 
         return data_scatter
 
-    def __get_levels__(self,min_rr, max_rr, min_vv, max_vv):        
-        absmin = min_vv*min_rr        
-        absmax = max_vv*max_rr          
+    def __get_levels__(self,min_rr, max_rr, min_vv, max_vv,absolute):        
+        
+        if absolute:
+            mn = min(min_rr,max_rr)
+            mx = max(min_rr,max_rr)
+            absmin = (mn*(max_vv-min_vv)) + min_vv
+            absmax = (mx*(max_vv-min_vv)) + min_vv
+        else:
+            absmin = min_vv*min_rr        
+            absmax = max_vv*max_rr          
+            
         if absmin == absmax:
             d0 = 0.5
         elif absmin > 0:
@@ -230,25 +262,92 @@ class MapPlotHelp(object):
         d2 = d0 + (2*(1-d0)/3)                        
         return absmin,absmax,d0,d1,d2
     
-    def __get_colors__(self,hue,d0,d1,d2):
-        if hue == "GBR":
-            return [(0, "grey"), (d0, "snow"), (d1, "cornflowerblue"),(d2, "crimson"),(1.0, "rgb(100,0,0)")]
-        if hue == "GRB":
-            return [(0, "grey"), (d0, "snow"), (d1, "crimson"),(d2, "cornflowerblue"),(1.0, "navy")]
+    def __get_colors__(self,hue,d0,d1,d2,min_r,max_r,transparency):
+        t0,t1,t2,t3,t4,tx,tl,tm,tu = 1,1,1,1,1,1,1,1,1
+        if transparency == "low":
+            t0,t1,t2,t3,t4 = 0.5,0.5,0.5,0.5,0.5
+            tx = 0.5
+            tl,tm,tu = 0,0.5,1
+        elif transparency == "medium":
+            t0,t1,t2,t3,t4 = 0.4,0.1,0.4,0.5,0.4
+            tx = 0.5
+            tl,tm,tu = 0.1,0.5,0.4
+        elif transparency == "high":
+            t0,t1,t2,t3,t4 = 0,0.7,0.5,0.2,0
+            tx = 0.5
+            tl,tm,tu = 0.1,0.5,0.1                       
+        if hue == 'GRB':
+            t0,t1,t2,t3,t4 = t0,t1,t4,t3,t2
+        elif hue == "RB" or hue == 'GI':
+            tl,tm,tu = tu,tm,tl
+
+        grey = f"rgba(119,136,153,{t0})"
+        snow = f"rgba(240,248,255,{t1})"
+        cornflower = f"rgba(100,149,237,{t2})"
+        crimson = f"rgba(220,20,60,{t3})"
+        darkred = f"rgba(100,0,0,{t4})"
+        navy = f"rgba(0,0,128,{t4})"
+
+        black = f"rgba(0,0,0,{tx})"
+        ghost = f"rgba(248,248,255,{tx})"
+
+        midnight = f"rgba(25,25,112,{tl})"
+        maroon = f"rgba(128,0,0,{tu})"
+
+        indigo = f"rgba(75,0,130,{tl})"        
+        sea = f"rgba(32,178,170,{tu})"
+
+        slate = f"rgba(40,79,79,{0.7})"        
+        fire = f"rgba(178,34,34,{0.7})"  
+        alice = f"rgba(240,248,255,{0.7})"  
+        rose = f"rgba(255,228,225,{0.7})" 
+
+
+
+        
+        if hue == "GBR":            
+            return [(0, grey), (d0, snow), (d1, cornflower),(d2, crimson),(1.0, darkred)]
+        elif hue == "GRB":            
+            return [(0, grey), (d0, snow), (d1, crimson),(d2, cornflower),(1.0, navy)]                
         elif hue == "BW":
-            return [(0, "black"),(1.0, "snow")]
+            return [(0, black),(1.0, ghost)]
         elif hue == "WB":
-            return [(0, "snow"),(1.0, "black")]
+            return [(0, ghost),(1.0, black)]
         elif hue == "RB":
             if d0 <= 0:
-                return [(0,"rgb(100,0,0)"),(0.0001, "crimson"),(0.5,"snow"),(0.999, "cornflowerblue"),(1.0,"navy")]
+                return [(0,maroon),(0.5,ghost),(1.0,midnight)]
             else:
-                return [(0,"rgb(100,0,0)"),(0.0001, "crimson"),(d0,"snow"),(0.999, "cornflowerblue"),(1.0,"navy")]
+                return [(0,maroon),(d0,ghost),(1.0,midnight)]
         elif hue == "BR":
             if d0 <= 0:
-                return [(0,"navy"),(0.0001, "cornflowerblue"),(0.5,"snow"),(0,999, "crimson"),(1.0,"rgb(100,0,0)")]
+                return [(0,midnight),(0.5,ghost),(1.0,maroon)]
             else:
-                return [(0,"navy"),(0.0001, "cornflowerblue"),(d0,"snow"),(0.999, "crimson"),(1.0,"rgb(100,0,0)")]
+                return [(0,midnight),(d0,ghost),(1.0,maroon)]
+        elif hue == "IG":
+            if d0 <= 0:
+                return [(0,indigo),(0.5,ghost),(1.0,sea)]
+            else:
+                return [(0,indigo),(d0,ghost),(1.0,sea)]
+        elif hue == "GI":
+            if d0 <= 0:
+                return [(0,sea),(0.5,ghost),(1.0,indigo)]
+            else:
+                return [(0,sea),(d0,ghost),(1.0,indigo)]
+        elif hue == "MASK":
+            m2 = min(min_r,max_r)
+            m3 = max(min_r,max_r)
+            m1 = max(0,min(min_r,max_r)-0.01)
+            m4 = min(1,max(min_r,max_r)+0.01)
+            #return [(0,shell),(m1,shell),(m2,slate),(m3,fire),(m4,shell),(1.0,shell)]
+            return [(0,alice),(0.1,alice),(0.2,slate),(0.8,fire),(0.9,rose),(1.0,rose)]                        
+            #return [(0,shell),(0.5,slate),(1.0,shell)]
+            
+            
+
+      
+
+        
+
 
         
     
